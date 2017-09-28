@@ -1,42 +1,29 @@
 package in.nickma;
 
-import java.util.HashMap;
+public class Token {
 
-public enum Token {
+    private TokenType tokenType;
+    private String lexeme;
 
-    INTEGER(null),
-    FLOAT(null),
-    IDENTIFIER(null),
-    STRING(null),
-
-    LEFT_PARENTHESIS("("),
-    RIGHT_PARENTHESIS(")"),
-    EQUAL_SIGN("="),
-    ADDITION_OPERATOR("+"),
-    SUBTRACTION_OPERATOR("-"),
-    MULTIPLICATION_OPERATOR("*"),
-    DIVISION_OPERATOR("/"),
-
-    EOF(null);
-
-    private static HashMap<String, Token> lookUpTable = new HashMap<>();
-
-    static {
-        for (Token token : values()) {
-            if (token.text != null) {
-                lookUpTable.put(token.text, token);
-            }
-        }
+    public Token(final TokenType tokenType, final String lexeme) {
+        this.tokenType = tokenType;
+        this.lexeme = lexeme;
     }
 
-    private String text;
-
-    Token(final String text) {
-        this.text = text;
+    public TokenType getTokenType() {
+        return tokenType;
     }
 
-    public static Token getMatchingToken(final String lexeme) {
-        return lookUpTable.get(lexeme);
+
+    public String getLexeme() {
+        return lexeme;
     }
 
+    @Override
+    public String toString() {
+        return "Token{" +
+                "tokenType=" + tokenType +
+                ", lexeme='" + lexeme + '\'' +
+                '}';
+    }
 }

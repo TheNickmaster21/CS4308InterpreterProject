@@ -1,2 +1,24 @@
-test - "this is a" "test" 4 +3 + 3
-eggs 1.22*67 +1
+function  max_array return type integer
+   parameters
+       a array[] of type integer,
+       num_elements of type integer
+   is
+   variables
+       define i of type integer
+       define max_elem of type integer
+       define hh of type integer
+   begin
+       set i = 1
+       set max_elem = a[0]
+       display "initial max_elem: ", max_elem
+       while i < num_elements do
+           if a[i] > max_elem
+           then
+               set max_elem = a[i]
+               set hh = varm2[i]^3
+               display "max_elem: ", max_elem
+           endif
+           set i = i + 1
+       endwhile
+       return max_elem
+  endfun max_array

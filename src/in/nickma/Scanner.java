@@ -2,7 +2,7 @@ package in.nickma;
 
 import java.util.Iterator;
 
-public class Scanner implements Iterator<ParseNode> {
+public class Scanner implements Iterator<Token> {
 
     private String input;
     private int index = -1;
@@ -29,66 +29,66 @@ public class Scanner implements Iterator<ParseNode> {
     }
 
     @Override
-    public ParseNode next() {
+    public Token next() {
         advancePastWhiteSpace();
 
-        ParseNode singleCharacterParseNode = singleCharacterParseNode();
-        if (singleCharacterParseNode != null) {
+        Token singleCharacterToken = singleCharacterParseNode();
+        if (singleCharacterToken != null) {
             index++;
-            return singleCharacterParseNode;
+            return singleCharacterToken;
         }
 
         String runningLexeme = "";
         while (index < input.length()) {
-            singleCharacterParseNode = singleCharacterParseNode();
-            if (singleCharacterParseNode != null
+            singleCharacterToken = singleCharacterParseNode();
+            if (singleCharacterToken != null
                     || (!runningLexeme.isEmpty() && runningLexeme.charAt(0) != '"'
                     && Character.isWhitespace(input.charAt(index)))) {
                 return getAbstractParseNodeFromLexeme(runningLexeme);
             }
             runningLexeme = runningLexeme + input.charAt(index);
             index++;
-            Token token = Token.getMatchingToken(runningLexeme);
-            if (token != null) {
-                return new ParseNode(token, runningLexeme);
+            TokenType tokenType = TokenType.getMatchingToken(runningLexeme);
+            if (tokenType != null) {
+                return new Token(tokenType, runningLexeme);
             }
             if (runningLexeme.length() > 1 && runningLexeme.charAt(runningLexeme.length() - 1) == '"') {
                 break;
             }
         }
         // We ran out of characters!
-        if (runningLexeme.isEmpty()) {
-            return new ParseNode(Token.EOF, "");
+        if (runningLexeme.isEmpty() || !runningLexeme.matches(".*\\w.*")) {
+            return new Token(TokenType.EOF, "");
         } else {
             return getAbstractParseNodeFromLexeme(runningLexeme);
         }
     }
 
-    private ParseNode getAbstractParseNodeFromLexeme(final String lexeme) {
+    private Token getAbstractParseNodeFromLexeme(final String lexeme) {
         try {
             String s = String.valueOf(Float.parseFloat(lexeme));
-            return new ParseNode(Token.FLOAT, s);
+            return new Token(TokenType.FLOAT, s);
         } catch (NumberFormatException e) {
             // Ugly but it works
         }
         try {
             String s = String.valueOf(Integer.parseInt(lexeme));
-            return new ParseNode(Token.INTEGER, s);
+            return new Token(TokenType.INTEGER, s);
         } catch (NumberFormatException e) {
             // Also ugly and also works
         }
         if (lexeme.charAt(0) == '"' && lexeme.charAt(lexeme.length() - 1) == '"') {
-            return new ParseNode(Token.STRING, lexeme);
+            return new Token(TokenType.STRING, lexeme);
         } else {
-            return new ParseNode(Token.IDENTIFIER, lexeme);
+            return new Token(TokenType.IDENTIFIER, lexeme);
         }
 
     }
 
-    private ParseNode singleCharacterParseNode() {
-        Token token = Token.getMatchingToken(String.valueOf(input.charAt(index)));
-        if (token != null) {
-            return new ParseNode(token, String.valueOf(String.valueOf(input.charAt(index))));
+    private Token singleCharacterParseNode() {
+        TokenType tokenType = TokenType.getMatchingToken(String.valueOf(input.charAt(index)));
+        if (tokenType != null) {
+            return new Token(tokenType, String.valueOf(String.valueOf(input.charAt(index))));
         } else {
             return null;
         }
