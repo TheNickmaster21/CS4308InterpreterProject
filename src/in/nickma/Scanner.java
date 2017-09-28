@@ -41,8 +41,9 @@ public class Scanner implements Iterator<ParseNode> {
         String runningLexeme = "";
         while (index < input.length()) {
             singleCharacterParseNode = singleCharacterParseNode();
-            if (singleCharacterParseNode != null || Character.isWhitespace(input.charAt(index))) {
-                // TODO Figure out Strings vs identifiers
+            if (singleCharacterParseNode != null
+                    || (!runningLexeme.isEmpty() && runningLexeme.charAt(0) != '"'
+                    && Character.isWhitespace(input.charAt(index)))) {
                 return getAbstractParseNodeFromLexeme(runningLexeme);
             }
             runningLexeme = runningLexeme + input.charAt(index);
@@ -50,6 +51,9 @@ public class Scanner implements Iterator<ParseNode> {
             Token token = Token.getMatchingToken(runningLexeme);
             if (token != null) {
                 return new ParseNode(token, runningLexeme);
+            }
+            if (runningLexeme.length() > 1 && runningLexeme.charAt(runningLexeme.length() - 1) == '"') {
+                break;
             }
         }
         // We ran out of characters!
