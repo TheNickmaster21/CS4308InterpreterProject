@@ -6,6 +6,7 @@ public enum Token {
 
     INTEGER(null),
     FLOAT(null),
+    IDENTIFIER(null),
     STRING(null),
 
     LEFT_PARENTHESIS("("),

@@ -42,6 +42,7 @@ public class Scanner implements Iterator<ParseNode> {
         while (index < input.length()) {
             singleCharacterParseNode = singleCharacterParseNode();
             if (singleCharacterParseNode != null || Character.isWhitespace(input.charAt(index))) {
+                // TODO Figure out Strings vs identifiers
                 return getAbstractParseNodeFromLexeme(runningLexeme);
             }
             runningLexeme = runningLexeme + input.charAt(index);
@@ -72,7 +73,12 @@ public class Scanner implements Iterator<ParseNode> {
         } catch (NumberFormatException e) {
             // Also ugly and also works
         }
-        return new ParseNode(Token.STRING, lexeme);
+        if (lexeme.charAt(0) == '"' && lexeme.charAt(lexeme.length() - 1) == '"') {
+            return new ParseNode(Token.STRING, lexeme);
+        } else {
+            return new ParseNode(Token.IDENTIFIER, lexeme);
+        }
+
     }
 
     private ParseNode singleCharacterParseNode() {
