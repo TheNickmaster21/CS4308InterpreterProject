@@ -25,7 +25,7 @@ public enum TokenType {
 
     SET("set"),
     DEFINE("define"),
-    ARRAY("array[]"),
+    ARRAY("array"),
     FUNCTION("function"),
     RETURN("return"),
     OF("of"),

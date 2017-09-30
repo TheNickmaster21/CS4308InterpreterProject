@@ -6,6 +6,8 @@ public class Scanner implements Iterator<Token> {
 
     private String input;
     private int index = -1;
+    private int rowNumber = 1;
+    private int columnNumber = 1;
     private boolean finished;
 
     public Scanner(String input) {
@@ -18,6 +20,8 @@ public class Scanner implements Iterator<Token> {
 
     @Override
     public boolean hasNext() {
+        advancePastWhiteSpace();
+
         if (this.finished) {
             return false;
         }
@@ -30,11 +34,9 @@ public class Scanner implements Iterator<Token> {
 
     @Override
     public Token next() {
-        advancePastWhiteSpace();
-
         Token singleCharacterToken = singleCharacterParseNode();
         if (singleCharacterToken != null) {
-            index++;
+            advanceAndTrackLineNumber();
             return singleCharacterToken;
         }
 
@@ -47,10 +49,10 @@ public class Scanner implements Iterator<Token> {
                 return getNumberOrStringTokenFromLexeme(runningLexeme);
             }
             runningLexeme = runningLexeme + input.charAt(index);
-            index++;
+            advanceAndTrackLineNumber();
             TokenType tokenType = TokenType.getMatchingToken(runningLexeme);
             if (tokenType != null) {
-                return new Token(tokenType, runningLexeme);
+                return buildToken(tokenType, runningLexeme);
             }
             if (runningLexeme.length() > 1 && runningLexeme.charAt(runningLexeme.length() - 1) == '"') {
                 break;
@@ -58,7 +60,7 @@ public class Scanner implements Iterator<Token> {
         }
         // We ran out of characters!
         if (runningLexeme.isEmpty() || !runningLexeme.matches(".*\\w.*")) {
-            return new Token(TokenType.EOF, "");
+            return buildToken(TokenType.EOF, "");
         } else {
             return getNumberOrStringTokenFromLexeme(runningLexeme);
         }
@@ -66,21 +68,21 @@ public class Scanner implements Iterator<Token> {
 
     private Token getNumberOrStringTokenFromLexeme(final String lexeme) {
         try {
-            String s = String.valueOf(Float.parseFloat(lexeme));
-            return new Token(TokenType.FLOAT, s);
-        } catch (NumberFormatException e) {
-            // Ugly but it works
-        }
-        try {
             String s = String.valueOf(Integer.parseInt(lexeme));
-            return new Token(TokenType.INTEGER, s);
+            return buildToken(TokenType.INTEGER, s);
         } catch (NumberFormatException e) {
             // Also ugly and also works
         }
+        try {
+            String s = String.valueOf(Float.parseFloat(lexeme));
+            return buildToken(TokenType.FLOAT, s);
+        } catch (NumberFormatException e) {
+            // Ugly but it works
+        }
         if (lexeme.charAt(0) == '"' && lexeme.charAt(lexeme.length() - 1) == '"') {
-            return new Token(TokenType.STRING, lexeme);
+            return buildToken(TokenType.STRING, lexeme);
         } else {
-            return new Token(TokenType.IDENTIFIER, lexeme);
+            return buildToken(TokenType.IDENTIFIER, lexeme);
         }
 
     }
@@ -88,7 +90,7 @@ public class Scanner implements Iterator<Token> {
     private Token singleCharacterParseNode() {
         TokenType tokenType = TokenType.getMatchingToken(String.valueOf(input.charAt(index)));
         if (tokenType != null) {
-            return new Token(tokenType, String.valueOf(String.valueOf(input.charAt(index))));
+            return buildToken(tokenType, String.valueOf(input.charAt(index)));
         } else {
             return null;
         }
@@ -97,9 +99,23 @@ public class Scanner implements Iterator<Token> {
     private void advancePastWhiteSpace() {
         for (int i = index; i < input.length(); i++) {
             if (!(i == -1) && !Character.isWhitespace(input.charAt(i))) {
-                index = i;
                 break;
             }
+            advanceAndTrackLineNumber();
         }
+    }
+
+    private Token buildToken(final TokenType tokenType, final String lexeme) {
+        return new Token(tokenType, lexeme, rowNumber, columnNumber - lexeme.length() - 1);
+    }
+
+    private void advanceAndTrackLineNumber() {
+        if (index > -1 && index < input.length() && input.charAt(index) == '\n') {
+            columnNumber = 0;
+            rowNumber++;
+        } else {
+            columnNumber++;
+        }
+        index++;
     }
 }

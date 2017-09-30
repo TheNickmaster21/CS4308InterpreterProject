@@ -21,7 +21,7 @@ public class Main {
 
         switch (args[0]) {
             case "scan":
-                new Scanner(input).forEachRemaining(System.out::println);
+                new Scanner(input).forEachRemaining(Token::display);
                 return;
             case "parse":
                 // TODO
