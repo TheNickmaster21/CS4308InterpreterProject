@@ -10,12 +10,15 @@ public class Scanner implements Iterator<Token> {
     private int columnNumber = 1;
     private boolean finished;
 
-    public Scanner(String input) {
+    private Scanner(String input) {
         this.input = input;
-        if (!input.isEmpty()) {
-            advancePastWhiteSpace();
-        }
-        this.finished = index == -1;
+    }
+
+    // Make a scanner for the given String input
+    public static Scanner getScanner(final String input) {
+        Scanner scanner = new Scanner(input);
+        scanner.advancePastWhiteSpace();
+        return scanner;
     }
 
     @Override
@@ -66,6 +69,7 @@ public class Scanner implements Iterator<Token> {
         }
     }
 
+    // Use exceptions to determine if the lexeme is an integer, a float, or a string
     private Token getNumberOrStringTokenFromLexeme(final String lexeme) {
         try {
             String s = String.valueOf(Integer.parseInt(lexeme));
@@ -87,6 +91,7 @@ public class Scanner implements Iterator<Token> {
 
     }
 
+    // Check if there is a token that can be built with a single character
     private Token singleCharacterParseNode() {
         TokenType tokenType = TokenType.getMatchingToken(String.valueOf(input.charAt(index)));
         if (tokenType != null) {
@@ -96,6 +101,7 @@ public class Scanner implements Iterator<Token> {
         }
     }
 
+    // Move the index forward past any whitespace
     private void advancePastWhiteSpace() {
         for (int i = index; i < input.length(); i++) {
             if (!(i == -1) && !Character.isWhitespace(input.charAt(i))) {
@@ -105,10 +111,12 @@ public class Scanner implements Iterator<Token> {
         }
     }
 
+    // Build a token object of the given type with the lexeme with the current row and column
     private Token buildToken(final TokenType tokenType, final String lexeme) {
         return new Token(tokenType, lexeme, rowNumber, columnNumber - lexeme.length() - 1);
     }
 
+    // Move forward the index variable and increment the row and column based on what the last character was
     private void advanceAndTrackLineNumber() {
         if (index > -1 && index < input.length() && input.charAt(index) == '\n') {
             columnNumber = 0;

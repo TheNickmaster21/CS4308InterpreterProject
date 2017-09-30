@@ -47,7 +47,7 @@ public class Main {
             final Map<Integer, String> parameterLookup) {
 
         LinkedList<Token> tokens = new LinkedList<>();
-        new Scanner(input).forEachRemaining(tokens::add);
+        Scanner.getScanner(input).forEachRemaining(tokens::add);
 
         tokens.forEach(Token::display);
 
