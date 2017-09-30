@@ -44,7 +44,7 @@ public class Scanner implements Iterator<Token> {
             if (singleCharacterToken != null
                     || (!runningLexeme.isEmpty() && runningLexeme.charAt(0) != '"'
                     && Character.isWhitespace(input.charAt(index)))) {
-                return getAbstractParseNodeFromLexeme(runningLexeme);
+                return getNumberOrStringTokenFromLexeme(runningLexeme);
             }
             runningLexeme = runningLexeme + input.charAt(index);
             index++;
@@ -60,11 +60,11 @@ public class Scanner implements Iterator<Token> {
         if (runningLexeme.isEmpty() || !runningLexeme.matches(".*\\w.*")) {
             return new Token(TokenType.EOF, "");
         } else {
-            return getAbstractParseNodeFromLexeme(runningLexeme);
+            return getNumberOrStringTokenFromLexeme(runningLexeme);
         }
     }
 
-    private Token getAbstractParseNodeFromLexeme(final String lexeme) {
+    private Token getNumberOrStringTokenFromLexeme(final String lexeme) {
         try {
             String s = String.valueOf(Float.parseFloat(lexeme));
             return new Token(TokenType.FLOAT, s);
