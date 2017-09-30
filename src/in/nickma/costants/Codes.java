@@ -1,6 +1,11 @@
 package in.nickma.costants;
 
-public class KeywordCodes {
+import in.nickma.TokenType;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class Codes {
 
     public static final int INTEGER_CODE = 1000;
     public static final int FLOAT_CODE = 1001;
@@ -46,7 +51,17 @@ public class KeywordCodes {
 
     public static final int EOF = 9999;
 
-    private KeywordCodes() {
+    private Codes() {
 
+    }
+
+    private static Map<TokenType, Integer> codeLookup = new HashMap<>();
+
+    static {
+        codeLookup.put(TokenType.INTEGER, INTEGER_CODE);
+    }
+
+    public static Integer getCodeFromTokenType(final TokenType tokenType) {
+        return codeLookup.get(tokenType);
     }
 }
