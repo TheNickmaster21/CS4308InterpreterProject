@@ -17,12 +17,13 @@ public class Main {
         }
         String input;
         try {
-            input = readFile("test.cpl", Charset.defaultCharset());
+            input = readFile("test.cpl");
         } catch (IOException e) {
             System.out.println("Failed to read the file test.cpl !");
             throw new RuntimeException(e);
         }
 
+        // Lookup tables are here so the scanner can be used to build them out for the parser
         Map<Integer, String> literalLookup = new HashMap<>();
         Map<Integer, String> parameterLookup = new HashMap<>();
 
@@ -41,18 +42,23 @@ public class Main {
         }
     }
 
+    // Build a scanner for the given input, return a list of ParsableTokens from it, and populate the lookup tables
     static List<ParsableToken> scan(
             final String input,
             final Map<Integer, String> literalLookup,
             final Map<Integer, String> parameterLookup) {
 
+        // Make and run a scanner
         LinkedList<Token> tokens = new LinkedList<>();
         Scanner.getScanner(input).forEachRemaining(tokens::add);
 
+        // Display info on all the token scanned
         tokens.forEach(Token::display);
 
+        // Map the Tokens into ParsableTokens (tokens with codes)
         return tokens.stream()
                 .map(token -> {
+                    // Check to see if we need to use the lookup tables
                     Integer parameterCode = null;
                     Integer literalCode = null;
                     if (TokenType.IDENTIFIER.equals(token.getTokenType())) {
@@ -65,6 +71,7 @@ public class Main {
                         literalLookup.put(literalCode, token.getLexeme());
                     }
 
+                    // Make the new Parsable token
                     return new ParsableToken(
                             Codes.getCodeFromTokenType(token.getTokenType()),
                             parameterCode,
@@ -73,8 +80,9 @@ public class Main {
                 .collect(Collectors.toList());
     }
 
-    static String readFile(String path, Charset encoding) throws IOException {
+    // Utility method to read a file with the given path
+    static String readFile(String path) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
+        return new String(encoded, Charset.defaultCharset());
     }
 }
