@@ -62,46 +62,46 @@ public class Codes {
         codeLookup.put(TokenType.FLOAT, FLOAT_CODE);
         codeLookup.put(TokenType.IDENTIFIER, IDENTIFIER_CODE);
         codeLookup.put(TokenType.STRING, STRING_CODE);
-        
-        codeLookup.put(TokenType.LEFT_PARENTHESIS, LEFT_PARENTHESIS_CODE);
-        codeLookup.put(TokenType.RIGHT_PARENTHESIS, RIGHT_PARENTHESIS_CODE);
-        codeLookup.put(TokenType.LEFT_BRACKET, LEFT_BRACKET_CODE);
-        codeLookup.put(TokenType.RIGHT_BRACKET, RIGHT_BRACKET_CODE);
-        codeLookup.put(TokenType.EQUAL_SIGN, EQUAL_SIGN_CODE);
-        codeLookup.put(TokenType.ADDITION_OPERATOR, ADDITION_OPERATOR_CODE);
-        codeLookup.put(TokenType.SUBTRACTION_OPERATOR, SUBTRACTION_OPERATOR_CODE);
-        codeLookup.put(TokenType.MULTIPLICATION_OPERATOR, MULTIPLICATION_OPERATOR_CODE);
-        codeLookup.put(TokenType.DIVISION_OPERATOR, DIVISION_OPERATOR_CODE);
-        codeLookup.put(TokenType.EXPONENT_OPERATOR, EXPONENT_OPERATOR_CODE);
-        codeLookup.put(TokenType.LESS_THAN_OPERATOR, LESS_THAN_OPERATOR_CODE);
-        codeLookup.put(TokenType.GREATER_THAN_OPERATOR, GREATER_THAN_OPERATOR_CODE);
-        codeLookup.put(TokenType.COMMA, COMMA_CODE);
-        
+
+        codeLookup.put(TokenType.LEFT_PARENTHESIS, LEFT_PARENTHESIS);
+        codeLookup.put(TokenType.RIGHT_PARENTHESIS, RIGHT_PARENTHESIS);
+        codeLookup.put(TokenType.LEFT_BRACKET, LEFT_BRACKET);
+        codeLookup.put(TokenType.RIGHT_BRACKET, RIGHT_BRACKET);
+        codeLookup.put(TokenType.EQUAL_SIGN, EQUAL_SIGN);
+        codeLookup.put(TokenType.ADDITION_OPERATOR, ADDITION_OPERATOR);
+        codeLookup.put(TokenType.SUBTRACTION_OPERATOR, SUBTRACTION_OPERATOR);
+        codeLookup.put(TokenType.MULTIPLICATION_OPERATOR, MULTIPLICATION_OPERATOR);
+        codeLookup.put(TokenType.DIVISION_OPERATOR, DIVISION_OPERATOR);
+        codeLookup.put(TokenType.EXPONENT_OPERATOR, EXPONENT_OPERATOR);
+        codeLookup.put(TokenType.LESS_THAN_OPERATOR, LESS_THAN_OPERATOR);
+        codeLookup.put(TokenType.GREATER_THAN_OPERATOR, GREATER_THAN_OPERATOR);
+        codeLookup.put(TokenType.COMMA, COMMA);
+
         codeLookup.put(TokenType.SET, SET_CODE);
         codeLookup.put(TokenType.DEFINE, DEFINE_CODE);
         codeLookup.put(TokenType.ARRAY, ARRAY_CODE);
-        codeLookup.put(TokenType.FUNCTION, FUNCTION_CODE);
-        codeLookup.put(TokenType.RETURN, RETURN_CODE);
-        codeLookup.put(TokenType.OF, OF_CODE);
-        codeLookup.put(TokenType.TYPE, TYPE_CODE);
-        codeLookup.put(TokenType.PARAMETERS, PARAMETERS_CODE);
-        codeLookup.put(TokenType.IS, IS_CODE);
-        codeLookup.put(TokenType.VARIABLES, VARIABLES_CODE);
-        codeLookup.put(TokenType.BEGIN, BEGIN_CODE);
-        codeLookup.put(TokenType.DISPLAY, DISPLAY_CODE);
-        codeLookup.put(TokenType.WHILE, WHILE_CODE);
-        codeLookup.put(TokenType.DO, DO_CODE);
-        codeLookup.put(TokenType.IF, IF_CODE);
-        codeLookup.put(TokenType.THEN, THEN_CODE);
-        
-        codeLookup.put(TokenType.END_IF, END_IF_CODE);
-        codeLookup.put(TokenType.END_WHILE, END_WHILE_CODE);
-        codeLookup.put(TokenType.END_FUNCTION, END_FUNCTION_CODE);
+        codeLookup.put(TokenType.FUNCTION, FUNCTION);
+        codeLookup.put(TokenType.RETURN, RETURN);
+        codeLookup.put(TokenType.OF, OF);
+        codeLookup.put(TokenType.TYPE, TYPE);
+        codeLookup.put(TokenType.PARAMETERS, PARAMETERS);
+        codeLookup.put(TokenType.IS, IS);
+        codeLookup.put(TokenType.VARIABLES, VARIABLES);
+        codeLookup.put(TokenType.BEGIN, BEGIN);
+        codeLookup.put(TokenType.DISPLAY, DISPLAY);
+        codeLookup.put(TokenType.WHILE, WHILE);
+        codeLookup.put(TokenType.DO, DO);
+        codeLookup.put(TokenType.IF, IF);
+        codeLookup.put(TokenType.THEN, THEN);
 
-        codeLookup.put(TokenType.INTEGER_TYPE, INTEGER_TYPE_CODE);
-        
-        codeLookup.put(TokenType.EOF, EOF_CODE);
-        
+        codeLookup.put(TokenType.END_IF, END_IF);
+        codeLookup.put(TokenType.END_WHILE, END_WHILE);
+        codeLookup.put(TokenType.END_FUNCTION, END_FUNCTION);
+
+        codeLookup.put(TokenType.INTEGER_TYPE, INTEGER_TYPE);
+
+        codeLookup.put(TokenType.EOF, EOF);
+
     }
 
     public static Integer getCodeFromTokenType(final TokenType tokenType) {

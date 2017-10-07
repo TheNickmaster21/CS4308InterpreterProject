@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 public class Main {
 
     public static void main(String[] args) {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("Expected a single argument!");
+        if (args.length != 2) {
+            throw new IllegalArgumentException("Expected two arguments!");
         }
         String input;
         try {
-            input = readFile("test.cpl");
+            input = readFile(args[1]);
         } catch (IOException e) {
             System.out.println("Failed to read the file test.cpl !");
             throw new RuntimeException(e);
