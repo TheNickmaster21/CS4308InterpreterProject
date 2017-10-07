@@ -12,14 +12,15 @@ import java.util.stream.Collectors;
 public class Main {
 
     public static void main(String[] args) {
-        if (args.length != 2) {
+        if (args.length != 2) { // Make sure the correct number of arguments were used
             throw new IllegalArgumentException("Expected two arguments!");
         }
+
         String input;
         try {
-            input = readFile(args[1]);
+            input = readFile(args[1]); // Attempt to read the file specified
         } catch (IOException e) {
-            System.out.println("Failed to read the file test.cpl !");
+            System.out.println(String.format("Failed to read the file %s !", args[1]));
             throw new RuntimeException(e);
         }
 
@@ -27,7 +28,7 @@ public class Main {
         Map<Integer, String> literalLookup = new HashMap<>();
         Map<Integer, String> parameterLookup = new HashMap<>();
 
-        switch (args[0]) {
+        switch (args[0]) { // Ability to only do certain levels of processing
             case "scan":
                 scan(input, literalLookup, parameterLookup);
                 return;
