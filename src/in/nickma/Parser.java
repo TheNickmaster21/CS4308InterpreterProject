@@ -27,7 +27,7 @@ public class Parser {
 
         // iterate through the remaining tokens slowly shrinking the list as children are replaced by parents
         while (remainingTokenBranches.size() > 1) {
-            for (int i = 0; i < remainingTokenBranches.size(); i++) {
+            for (int i = remainingTokenBranches.size() - 1; i > 0; i--) {
                 if (buildParent(i)) {
                     break; // Restart the for loop from the beginning
                 }

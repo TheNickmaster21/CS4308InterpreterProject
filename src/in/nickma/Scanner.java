@@ -1,8 +1,10 @@
 package in.nickma;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-public class Scanner implements Iterator<Token> {
+public class Scanner {
 
     private String input; // Store the string being scanned
     private int index = -1; // Store the character the scanner is currently on
@@ -21,24 +23,33 @@ public class Scanner implements Iterator<Token> {
         return scanner;
     }
 
-    // Method to see if there is another token to be found
-    @Override
-    public boolean hasNext() {
+    public synchronized List<Token> scan() {
+        index = -1;
+        rowNumber = 1;
+        columnNumber = 1;
+        List<Token> tokens = new LinkedList<>();
+        tokens.add(buildToken(TokenType.BOF, ""));
+
         advancePastWhiteSpace();
 
-        if (this.finished) {
-            return false;
+        Token nextToken = next();
+        while (nextToken != null) {
+            tokens.add(nextToken);
+            nextToken = next();
         }
-        if (index >= input.length()) {
-            this.finished = true;
-            return false;
-        }
-        return true;
+
+        tokens.add(buildToken(TokenType.EOF, ""));
+        return tokens;
     }
 
     // Method to actually find the next token
-    @Override
-    public Token next() {
+    private Token next() {
+        if (index >= input.length()) {
+            return null;
+        }
+
+        advancePastWhiteSpace();
+
         Token singleCharacterToken = singleCharacterParseNode(); // First check for a single character token (e.g. '=')
         if (singleCharacterToken != null) {
             advanceAndTrackLineNumber();
@@ -65,9 +76,9 @@ public class Scanner implements Iterator<Token> {
         }
         // We ran out of characters!
         if (runningLexeme.isEmpty() || !runningLexeme.matches(".*\\w.*")) {
-            return buildToken(TokenType.EOF, ""); // If we had to end and found nothing, it is the end of the file
-        } else {
             return getNumberOrStringTokenFromLexeme(runningLexeme); // Get a generic token from what we found
+        } else {
+            return null;
         }
     }
 

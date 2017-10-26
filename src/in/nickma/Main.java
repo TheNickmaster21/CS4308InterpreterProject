@@ -44,7 +44,7 @@ public class Main {
     }
 
     private static TokenBranch parse(
-            final List<ParsableToken> parsableTokens){
+            final List<ParsableToken> parsableTokens) {
 
         Parser parser = Parser.getParser(parsableTokens);
 
@@ -60,8 +60,7 @@ public class Main {
             final Map<Integer, String> parameterLookup) {
 
         // Make and run a scanner
-        LinkedList<Token> tokens = new LinkedList<>();
-        Scanner.getScanner(input).forEachRemaining(tokens::add);
+        List<Token> tokens = Scanner.getScanner(input).scan();
 
         // Display info on all the token scanned
         tokens.forEach(Token::display);

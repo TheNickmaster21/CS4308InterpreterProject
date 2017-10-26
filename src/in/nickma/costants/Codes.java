@@ -7,6 +7,8 @@ import java.util.Map;
 
 public class Codes {
 
+    public static final int BOF = 0;
+
     public static final int INTEGER_CODE = 1000;
     public static final int FLOAT_CODE = 1001;
     public static final int IDENTIFIER_CODE = 1002;
@@ -58,6 +60,8 @@ public class Codes {
     private static Map<TokenType, Integer> codeLookup = new HashMap<>();
 
     static {
+        codeLookup.put(TokenType.BOF, BOF);
+
         codeLookup.put(TokenType.INTEGER, INTEGER_CODE);
         codeLookup.put(TokenType.FLOAT, FLOAT_CODE);
         codeLookup.put(TokenType.IDENTIFIER, IDENTIFIER_CODE);

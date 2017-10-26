@@ -46,6 +46,7 @@ public enum TokenType {
 
     INTEGER_TYPE("integer"),
 
+    BOF(null),
     EOF(null);
 
     private static HashMap<String, TokenType> lookUpTable = new HashMap<>();
