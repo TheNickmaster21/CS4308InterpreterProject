@@ -75,7 +75,7 @@ public class Scanner {
             }
         }
         // We ran out of characters!
-        if (runningLexeme.isEmpty() || !runningLexeme.matches(".*\\w.*")) {
+        if (!runningLexeme.isEmpty() && runningLexeme.matches(".*\\w.*")) {
             return getNumberOrStringTokenFromLexeme(runningLexeme); // Get a generic token from what we found
         } else {
             return null;

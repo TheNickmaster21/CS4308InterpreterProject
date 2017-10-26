@@ -1,4 +1,4 @@
-function  max_array return type integer
+  function max_array return type integer
    parameters
        a array[] of type integer,
        num_elements of type integer
@@ -22,3 +22,21 @@ function  max_array return type integer
        endwhile
        return max_elem
   endfun max_array
+
+  function main is
+    variables
+       define marray array [MAX] of type integer
+       define max_val of type integer
+       define kelements of type integer
+       define j of type integer
+       define mybhvar of type integer
+       define myihvar of type integer
+    begin
+      input "Number of elements to process: ", kelements
+      for j = 0 to kelements -1 do
+         input "Enter element int value: " , marray [j]
+      endfor
+      set max_val = max_array(marray, kelements)
+      display "Max Integer found: ", max_val
+      exit
+  endfun main
