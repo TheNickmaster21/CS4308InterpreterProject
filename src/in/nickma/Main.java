@@ -33,7 +33,7 @@ public class Main {
                 scan(input, literalLookup, parameterLookup);
                 return;
             case "parse":
-                // TODO
+                parse(scan(input, literalLookup, parameterLookup));
                 return;
             case "interpret":
                 // TODO
@@ -43,8 +43,18 @@ public class Main {
         }
     }
 
+    private static TokenBranch parse(
+            final List<ParsableToken> parsableTokens){
+
+        Parser parser = Parser.getParser(parsableTokens);
+
+        //TODO print out results
+
+        return parser.parse();
+    }
+
     // Build a scanner for the given input, return a list of ParsableTokens from it, and populate the lookup tables
-    static List<ParsableToken> scan(
+    private static List<ParsableToken> scan(
             final String input,
             final Map<Integer, String> literalLookup,
             final Map<Integer, String> parameterLookup) {
@@ -82,7 +92,7 @@ public class Main {
     }
 
     // Utility method to read a file with the given path
-    static String readFile(String path) throws IOException {
+    private static String readFile(String path) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, Charset.defaultCharset());
     }
