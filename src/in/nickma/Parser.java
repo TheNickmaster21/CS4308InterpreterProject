@@ -47,6 +47,9 @@ public class Parser {
         TokenBranch currentTokenBranch = remainingTokenBranches.get(index);
 
         switch (currentTokenBranch.getToken().getTypeCode()) {
+            case IDENTIFIER:
+                if (expression(index))
+                    return true;
             case SET:
                 if (set(index))
                     return true;
@@ -59,11 +62,20 @@ public class Parser {
         }
     }
 
+    private boolean expression(final int index) {
+        //TODO Check for other cases that make an expression first
+        if (tokenBranchAtMatchesCode(index, IDENTIFIER)) {
+            createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index);
+            return true;
+        }
+        return false;
+    }
+
     private boolean set(final int index) {
         //check if there is an equals sign and an expression next
         // if so, return true, pull out those branches, and add a new parent in their place
         if (tokenBranchAtMatchesCode(index, SET)
-                && tokenBranchAtMatchesCode(index + 1, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION) // Only valid if the expression consists of one identifier
                 && tokenBranchAtMatchesCode(index + 2, EQUAL_SIGN)
                 && tokenBranchAtMatchesCode(index + 3, EXPRESSION)) {
 
