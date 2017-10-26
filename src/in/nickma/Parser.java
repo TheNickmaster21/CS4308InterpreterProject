@@ -1,5 +1,6 @@
 package in.nickma;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,11 +47,11 @@ public class Parser {
         TokenBranch currentTokenBranch = remainingTokenBranches.get(index);
 
         switch (currentTokenBranch.getToken().getTypeCode()) {
-            case SET_CODE:
+            case SET:
                 if (set(index))
                     return true;
                 //if some other option if that wasn't right
-            case DEFINE_CODE:
+            case DEFINE:
                 if (define(index))
                     return true;
             default:
@@ -61,7 +62,15 @@ public class Parser {
     private boolean set(final int index) {
         //check if there is an equals sign and an expression next
         // if so, return true, pull out those branches, and add a new parent in their place
-        return true;
+        if (tokenBranchAtMatchesCode(index, SET)
+                && tokenBranchAtMatchesCode(index + 1, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 2, EQUAL_SIGN)
+                && tokenBranchAtMatchesCode(index + 3, EXPRESSION)) {
+
+            createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 3);
+            return true;
+        }
+        return false;
     }
 
     private boolean define(final int index) {
@@ -71,4 +80,27 @@ public class Parser {
         return true;
     }
 
+    // Utility methods
+
+    private TokenBranch createAndAddTokenBranchObjectFromIndices(
+            final int code,
+            final int start,
+            final int end) {
+        List<TokenBranch> children = new ArrayList<>();
+
+        for (int i = start; i < end; i++) {
+            children.add(remainingTokenBranches.get(start));
+            remainingTokenBranches.remove(start);
+        }
+
+        return new TokenBranch(new ParsableToken(code, null, null), children);
+    }
+
+    private boolean tokenBranchAtMatchesCode(
+            final int index,
+            final int code) {
+        return index > 0 && index < remainingTokenBranches.size()
+                && remainingTokenBranches.get(index)
+                .getToken().getTypeCode() == index;
+    }
 }

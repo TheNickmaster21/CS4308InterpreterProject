@@ -7,12 +7,14 @@ import java.util.Map;
 
 public class Codes {
 
+    //Scanning Codes
+
     public static final int BOF = 0;
 
-    public static final int INTEGER_CODE = 1000;
-    public static final int FLOAT_CODE = 1001;
-    public static final int IDENTIFIER_CODE = 1002;
-    public static final int STRING_CODE = 1003;
+    public static final int INTEGER = 1000;
+    public static final int FLOAT = 1001;
+    public static final int IDENTIFIER = 1002;
+    public static final int STRING = 1003;
 
     public static final int LEFT_PARENTHESIS = 1100;
     public static final int RIGHT_PARENTHESIS = 1101;
@@ -28,9 +30,9 @@ public class Codes {
     public static final int GREATER_THAN_OPERATOR = 1111;
     public static final int COMMA = 1112;
 
-    public static final int SET_CODE = 1200;
-    public static final int DEFINE_CODE = 1201;
-    public static final int ARRAY_CODE = 1202;
+    public static final int SET = 1200;
+    public static final int DEFINE = 1201;
+    public static final int ARRAY = 1202;
     public static final int FUNCTION = 1203;
     public static final int RETURN = 1204;
     public static final int OF = 1205;
@@ -53,6 +55,12 @@ public class Codes {
 
     public static final int EOF = 9999;
 
+    //Additional grammar / parsing codes
+
+    public static final int STATEMENT = 2000;
+    public static final int EXPRESSION = 2001;
+    public static final int ARRAY_IDENTIFIER = 2002;
+
     private Codes() {
 
     }
@@ -62,10 +70,10 @@ public class Codes {
     static {
         codeLookup.put(TokenType.BOF, BOF);
 
-        codeLookup.put(TokenType.INTEGER, INTEGER_CODE);
-        codeLookup.put(TokenType.FLOAT, FLOAT_CODE);
-        codeLookup.put(TokenType.IDENTIFIER, IDENTIFIER_CODE);
-        codeLookup.put(TokenType.STRING, STRING_CODE);
+        codeLookup.put(TokenType.INTEGER, INTEGER);
+        codeLookup.put(TokenType.FLOAT, FLOAT);
+        codeLookup.put(TokenType.IDENTIFIER, IDENTIFIER);
+        codeLookup.put(TokenType.STRING, STRING);
 
         codeLookup.put(TokenType.LEFT_PARENTHESIS, LEFT_PARENTHESIS);
         codeLookup.put(TokenType.RIGHT_PARENTHESIS, RIGHT_PARENTHESIS);
@@ -81,9 +89,9 @@ public class Codes {
         codeLookup.put(TokenType.GREATER_THAN_OPERATOR, GREATER_THAN_OPERATOR);
         codeLookup.put(TokenType.COMMA, COMMA);
 
-        codeLookup.put(TokenType.SET, SET_CODE);
-        codeLookup.put(TokenType.DEFINE, DEFINE_CODE);
-        codeLookup.put(TokenType.ARRAY, ARRAY_CODE);
+        codeLookup.put(TokenType.SET, SET);
+        codeLookup.put(TokenType.DEFINE, DEFINE);
+        codeLookup.put(TokenType.ARRAY, ARRAY);
         codeLookup.put(TokenType.FUNCTION, FUNCTION);
         codeLookup.put(TokenType.RETURN, RETURN);
         codeLookup.put(TokenType.OF, OF);
