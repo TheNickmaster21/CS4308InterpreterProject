@@ -119,4 +119,13 @@ public class Codes {
     public static Integer getCodeFromTokenType(final TokenType tokenType) {
         return codeLookup.get(tokenType);
     }
+
+    public static TokenType getTokenTypeFromCode(final Integer code) {
+        for (Map.Entry<TokenType, Integer> entry : codeLookup.entrySet()) {
+            if (entry.getValue().equals(code)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 }

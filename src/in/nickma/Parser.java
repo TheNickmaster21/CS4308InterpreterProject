@@ -1,5 +1,7 @@
 package in.nickma;
 
+import in.nickma.costants.Codes;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,14 +29,17 @@ public class Parser {
     public TokenBranch parse() {
 
         // iterate through the remaining tokens slowly shrinking the list as children are replaced by parents
+        boolean branchesChanged;
         while (remainingTokenBranches.size() > 1) {
-            for (int i = remainingTokenBranches.size() - 1; i > 0; i--) {
-                if (buildParent(i)) {
-                    break; // Restart the for loop from the beginning
-                }
+            branchesChanged = false;
+            printDerivationStep();
+            for (int i = remainingTokenBranches.size() - 1; i > 0 && !branchesChanged; i--) {
+                branchesChanged = buildParent(i);
             }
-            throw new RuntimeException("The whole tree was traversed and it was not simplified."
-                    + " There must be a syntactical error!");
+            if (!branchesChanged) {
+                throw new RuntimeException("The whole tree was traversed and it was not simplified."
+                        + " There must be a syntactical error!");
+            }
         }
         //TODO There are some conditions when it no longer parses down and something went wrong
         //We need to watch for those cases and throw an exception
@@ -89,23 +94,28 @@ public class Parser {
         //check if there is a type and variable
         // if so, return true, pull out those branches, and add a new parent in their place
         // if not, we need to throw an exception because the syntax is wrong
-        return true;
+        return false;
     }
 
     // Utility methods
 
-    private TokenBranch createAndAddTokenBranchObjectFromIndices(
+    private void createAndAddTokenBranchObjectFromIndices(
             final int code,
             final int start,
             final int end) {
         List<TokenBranch> children = new ArrayList<>();
 
-        for (int i = start; i < end; i++) {
+        for (int i = start; i <= end; i++) {
             children.add(remainingTokenBranches.get(start));
             remainingTokenBranches.remove(start);
         }
 
-        return new TokenBranch(new ParsableToken(code, null, null), children);
+        System.out.println(
+                code
+                        + " from "
+                        + String.join(", ", convertTokenBranchesToStrings(children)));
+
+        remainingTokenBranches.add(start, new TokenBranch(new ParsableToken(code, null, null), children));
     }
 
     private boolean tokenBranchAtMatchesCode(
@@ -113,6 +123,19 @@ public class Parser {
             final int code) {
         return index > 0 && index < remainingTokenBranches.size()
                 && remainingTokenBranches.get(index)
-                .getToken().getTypeCode() == index;
+                .getToken().getTypeCode() == code;
+    }
+
+    private void printDerivationStep() {
+        System.out.println(String.join(" - ", convertTokenBranchesToStrings(remainingTokenBranches)));
+    }
+
+    private List<String> convertTokenBranchesToStrings(
+            final List<TokenBranch> tokenBranches) {
+        return tokenBranches.stream()
+                .map(TokenBranch::getToken)
+                .map(ParsableToken::getTypeCode)
+                .map(String::valueOf)
+                .collect(Collectors.toList());
     }
 }
