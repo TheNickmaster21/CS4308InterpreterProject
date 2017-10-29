@@ -53,6 +53,8 @@ public class Parser {
 
         switch (currentTokenBranch.getToken().getTypeCode()) {
             case IDENTIFIER:
+                if (arrayIdentifier(index))
+                    return true;
                 if (expression(index))
                     return true;
             case SET:
@@ -67,9 +69,24 @@ public class Parser {
         }
     }
 
+    private boolean arrayIdentifier(final int index) {
+        if (tokenBranchAtMatchesCode(index, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 1, LEFT_BRACKET)
+                && tokenBranchAtMatchesCode(index + 2, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 3, RIGHT_BRACKET)) {
+            createAndAddTokenBranchObjectFromIndices(ARRAY_IDENTIFIER, index, index + 3);
+            return true;
+        }
+        return false;
+    }
+
     private boolean expression(final int index) {
         //TODO Check for other cases that make an expression first
-        if (tokenBranchAtMatchesCode(index, IDENTIFIER)) {
+        if (tokenBranchAtMatchesCode(index, IDENTIFIER)
+                || tokenBranchAtMatchesCode(index, ARRAY_IDENTIFIER)
+                || tokenBranchAtMatchesCode(index, INTEGER)
+                || tokenBranchAtMatchesCode(index, FLOAT)
+                || tokenBranchAtMatchesCode(index, STRING)) {
             createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index);
             return true;
         }
