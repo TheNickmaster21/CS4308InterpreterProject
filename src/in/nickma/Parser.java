@@ -1,7 +1,5 @@
 package in.nickma;
 
-import in.nickma.costants.Codes;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,32 +39,30 @@ public class Parser {
                         + " There must be a syntactical error!");
             }
         }
-        //TODO There are some conditions when it no longer parses down and something went wrong
-        //We need to watch for those cases and throw an exception
 
         return remainingTokenBranches.get(0);
     }
 
     private boolean buildParent(final int index) {
+        if (arrayIdentifier(index))
+            return true;
 
-        TokenBranch currentTokenBranch = remainingTokenBranches.get(index);
+        if (expression(index))
+            return true;
 
-        switch (currentTokenBranch.getToken().getTypeCode()) {
-            case IDENTIFIER:
-                if (arrayIdentifier(index))
-                    return true;
-                if (expression(index))
-                    return true;
-            case SET:
-                if (set(index))
-                    return true;
-                //if some other option if that wasn't right
-            case DEFINE:
-                if (define(index))
-                    return true;
-            default:
-                return false; // we got this far and none matched
-        }
+        if (set(index))
+            return true;
+
+        if (define(index))
+            return true;
+
+        if (ifStart(index))
+            return true;
+
+        if (ifStatement(index))
+            return true;
+
+        return false;
     }
 
     private boolean arrayIdentifier(final int index) {
@@ -81,13 +77,27 @@ public class Parser {
     }
 
     private boolean expression(final int index) {
-        //TODO Check for other cases that make an expression first
+        //Single token ways to make an expression
         if (tokenBranchAtMatchesCode(index, IDENTIFIER)
                 || tokenBranchAtMatchesCode(index, ARRAY_IDENTIFIER)
                 || tokenBranchAtMatchesCode(index, INTEGER)
                 || tokenBranchAtMatchesCode(index, FLOAT)
                 || tokenBranchAtMatchesCode(index, STRING)) {
             createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index);
+            return true;
+        }
+        //Multiple token ways to make an expression
+        if (tokenBranchAtMatchesCode(index, EXPRESSION)
+                && (tokenBranchAtMatchesCode(index + 1, ADDITION_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, SUBTRACTION_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, MULTIPLICATION_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, DIVISION_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, EXPONENT_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, LESS_THAN_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, GREATER_THAN_OPERATOR))
+                && tokenBranchAtMatchesCode(index + 2, EXPRESSION)) {
+
+            createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index + 2);
             return true;
         }
         return false;
@@ -111,6 +121,31 @@ public class Parser {
         //check if there is a type and variable
         // if so, return true, pull out those branches, and add a new parent in their place
         // if not, we need to throw an exception because the syntax is wrong
+        return false;
+    }
+
+    private boolean ifStart(final int index) {
+        if (tokenBranchAtMatchesCode(index, IF)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, THEN)) {
+
+            createAndAddTokenBranchObjectFromIndices(IF_START, index, index + 2);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean ifStatement(final int index) {
+        if (tokenBranchAtMatchesCode(index, IF_START)) {
+            int counter = index + 1;
+            while (tokenBranchAtMatchesCode(counter, EXPRESSION)) {
+                counter++;
+            }
+            if (tokenBranchAtMatchesCode(counter, END_IF)) {
+                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
+                return true;
+            }
+        }
         return false;
     }
 

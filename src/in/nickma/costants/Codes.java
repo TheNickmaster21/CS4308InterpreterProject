@@ -60,6 +60,7 @@ public class Codes {
     public static final int STATEMENT = 2000;
     public static final int EXPRESSION = 2001;
     public static final int ARRAY_IDENTIFIER = 2002;
+    public static final int IF_START = 2003;
 
     private Codes() {
 
