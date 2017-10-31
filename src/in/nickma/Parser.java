@@ -62,6 +62,9 @@ public class Parser {
         if (ifStatement(index))
             return true;
 
+        if (display(index))
+            return true;
+
         return false;
     }
 
@@ -149,6 +152,20 @@ public class Parser {
         return false;
     }
 
+    private boolean display(final int index) {
+        if (tokenBranchAtMatchesCode(index, DISPLAY)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)) {
+            if (tokenBranchAtMatchesCode(index + 2, COMMA)
+                    && tokenBranchAtMatchesCode(index + 3, EXPRESSION)) {
+                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 3);
+                return true;
+            } else {
+                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 1);
+                return true;
+            }
+        }
+        return false;
+    }
     // Utility methods
 
     private void createAndAddTokenBranchObjectFromIndices(
