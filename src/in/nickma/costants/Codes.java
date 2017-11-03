@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Codes {
 
-    //Scanning Codes
+    //Scanning in.nickma.costants.Codes
 
     public static final int BOF = 0;
 
@@ -46,6 +46,9 @@ public class Codes {
     public static final int DO = 1213;
     public static final int IF = 1214;
     public static final int THEN = 1215;
+    public static final int FOR = 1216;
+    public static final int END_FOR = 1217;
+    public static final int TO = 1218;
 
     public static final int END_IF = 1300;
     public static final int END_WHILE = 1301;
@@ -61,6 +64,7 @@ public class Codes {
     public static final int EXPRESSION = 2001;
     public static final int ARRAY_IDENTIFIER = 2002;
     public static final int IF_START = 2003;
+    public static final int FOR_START = 2004;
 
     private Codes() {
 

@@ -65,6 +65,9 @@ public class Parser {
         if (display(index))
             return true;
 
+        if (forStart(index))
+            return true;
+
         return false;
     }
 
@@ -95,6 +98,8 @@ public class Parser {
                 || tokenBranchAtMatchesCode(index + 1, SUBTRACTION_OPERATOR)
                 || tokenBranchAtMatchesCode(index + 1, MULTIPLICATION_OPERATOR)
                 || tokenBranchAtMatchesCode(index + 1, DIVISION_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, EQUAL_SIGN)  //Added this line -Dylan
+                || tokenBranchAtMatchesCode(index + 1, TO)  //Added this line -Dylan
                 || tokenBranchAtMatchesCode(index + 1, EXPONENT_OPERATOR)
                 || tokenBranchAtMatchesCode(index + 1, LESS_THAN_OPERATOR)
                 || tokenBranchAtMatchesCode(index + 1, GREATER_THAN_OPERATOR))
@@ -166,6 +171,20 @@ public class Parser {
         }
         return false;
     }
+
+    ////
+    private boolean forStart(final int index) {
+        if (tokenBranchAtMatchesCode(index, FOR)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION) //This should cover all cases, for example "for x=y do" and "for x=y to z" and "for x=y to z-w"... See expression method -Dylan
+                && tokenBranchAtMatchesCode(index + 2, DO)) {
+
+            createAndAddTokenBranchObjectFromIndices(FOR_START, index, index + 2);
+            return true;
+        }
+        return false;
+    }
+    ////
+
     // Utility methods
 
     private void createAndAddTokenBranchObjectFromIndices(
