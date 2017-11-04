@@ -65,6 +65,7 @@ public class Codes {
     public static final int ARRAY_IDENTIFIER = 2002;
     public static final int IF_START = 2003;
     public static final int FOR_START = 2004;
+    public static final int DEFINITION = 2005;
 
     private Codes() {
 
@@ -110,6 +111,8 @@ public class Codes {
         codeLookup.put(TokenType.DO, DO);
         codeLookup.put(TokenType.IF, IF);
         codeLookup.put(TokenType.THEN, THEN);
+        codeLookup.put(TokenType.TO, TO);
+        codeLookup.put(TokenType.FOR, FOR);
 
         codeLookup.put(TokenType.END_IF, END_IF);
         codeLookup.put(TokenType.END_WHILE, END_WHILE);

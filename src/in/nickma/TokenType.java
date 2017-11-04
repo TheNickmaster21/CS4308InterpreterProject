@@ -39,6 +39,8 @@ public enum TokenType {
     DO("do"),
     IF("if"),
     THEN("then"),
+    TO("to"),
+    FOR("for"),
 
     END_IF("endif"),
     END_WHILE("endwhile"),

@@ -68,6 +68,9 @@ public class Parser {
         if (forStart(index))
             return true;
 
+        if (forStatement(index))
+            return true;
+
         return false;
     }
 
@@ -105,10 +108,9 @@ public class Parser {
 
                 createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index + 2);
                 return true;
-            } else {
-                return false;
             }
         }
+        return false;
     }
 
     private boolean set(final int index) {
@@ -129,6 +131,16 @@ public class Parser {
         //check if there is a type and variable
         // if so, return true, pull out those branches, and add a new parent in their place
         // if not, we need to throw an exception because the syntax is wrong
+        if (tokenBranchAtMatchesCode(index, DEFINE)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, OF)
+                && tokenBranchAtMatchesCode(index + 3, TYPE)
+                && (tokenBranchAtMatchesCode(index + 4, INTEGER)
+                || tokenBranchAtMatchesCode(index + 4, FLOAT)
+                || tokenBranchAtMatchesCode(index + 4, STRING))) {
+            createAndAddTokenBranchObjectFromIndices(DEFINITION, index, index + 4);
+            return true;
+        }
         return false;
     }
 
@@ -146,7 +158,7 @@ public class Parser {
     private boolean ifStatement(final int index) {
         if (tokenBranchAtMatchesCode(index, IF_START)) {
             int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, EXPRESSION)) {
+            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
                 counter++;
             }
             if (tokenBranchAtMatchesCode(counter, END_IF)) {
@@ -172,30 +184,33 @@ public class Parser {
         return false;
     }
 
-    ////
     private boolean forStart(final int index) {
         if (tokenBranchAtMatchesCode(index, FOR)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
-                && (tokenBranchAtMatchesCode(index + 2, DO))) {
-
-            createAndAddTokenBranchObjectFromIndices(FOR_START, index, index + 2);
-            return true;
-        }
-        if(tokenBranchAtMatchesCode(index, FOR)
                 && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
                 && tokenBranchAtMatchesCode(index + 2, EQUAL_SIGN)
                 && tokenBranchAtMatchesCode(index + 3, EXPRESSION)
                 && tokenBranchAtMatchesCode(index + 4, TO)
                 && tokenBranchAtMatchesCode(index + 5, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 6, SUBTRACTION_OPERATOR)
-                && tokenBranchAtMatchesCode(index + 7, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 8, DO)) {
-            createAndAddTokenBranchObjectFromIndices(FOR_START, index, index + 8);
+                && tokenBranchAtMatchesCode(index + 6, DO)) {
+            createAndAddTokenBranchObjectFromIndices(FOR_START, index, index + 6);
             return true;
         }
-        else return false;
+        return false;
     }
-    ////
+
+    private boolean forStatement(final int index) {
+        if (tokenBranchAtMatchesCode(index, FOR_START)) {
+            int counter = index + 1;
+            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
+                counter++;
+            }
+            if (tokenBranchAtMatchesCode(counter, END_FOR)) {
+                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
+                return true;
+            }
+        }
+        return false;
+    }
 
     // Utility methods
 
