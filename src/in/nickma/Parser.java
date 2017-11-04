@@ -91,24 +91,24 @@ public class Parser {
                 || tokenBranchAtMatchesCode(index, STRING)) {
             createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index);
             return true;
-        }
-        //Multiple token ways to make an expression
-        if (tokenBranchAtMatchesCode(index, EXPRESSION)
-                && (tokenBranchAtMatchesCode(index + 1, ADDITION_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, SUBTRACTION_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, MULTIPLICATION_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, DIVISION_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, EQUAL_SIGN)  //Added this line -Dylan
-                || tokenBranchAtMatchesCode(index + 1, TO)  //Added this line -Dylan
-                || tokenBranchAtMatchesCode(index + 1, EXPONENT_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, LESS_THAN_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, GREATER_THAN_OPERATOR))
-                && tokenBranchAtMatchesCode(index + 2, EXPRESSION)) {
+        } else {
+            //Multiple token ways to make an expression
+            if (tokenBranchAtMatchesCode(index, EXPRESSION)
+                    && (tokenBranchAtMatchesCode(index + 1, ADDITION_OPERATOR)
+                    || tokenBranchAtMatchesCode(index + 1, SUBTRACTION_OPERATOR)
+                    || tokenBranchAtMatchesCode(index + 1, MULTIPLICATION_OPERATOR)
+                    || tokenBranchAtMatchesCode(index + 1, DIVISION_OPERATOR)
+                    || tokenBranchAtMatchesCode(index + 1, EXPONENT_OPERATOR)
+                    || tokenBranchAtMatchesCode(index + 1, LESS_THAN_OPERATOR)
+                    || tokenBranchAtMatchesCode(index + 1, GREATER_THAN_OPERATOR))
+                    && tokenBranchAtMatchesCode(index + 2, EXPRESSION)) {
 
-            createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index + 2);
-            return true;
+                createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index + 2);
+                return true;
+            } else {
+                return false;
+            }
         }
-        return false;
     }
 
     private boolean set(final int index) {
@@ -175,13 +175,25 @@ public class Parser {
     ////
     private boolean forStart(final int index) {
         if (tokenBranchAtMatchesCode(index, FOR)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION) //This should cover all cases, for example "for x=y do" and "for x=y to z" and "for x=y to z-w"... See expression method -Dylan
-                && tokenBranchAtMatchesCode(index + 2, DO)) {
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
+                && (tokenBranchAtMatchesCode(index + 2, DO))) {
 
             createAndAddTokenBranchObjectFromIndices(FOR_START, index, index + 2);
             return true;
         }
-        return false;
+        if(tokenBranchAtMatchesCode(index, FOR)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, EQUAL_SIGN)
+                && tokenBranchAtMatchesCode(index + 3, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 4, TO)
+                && tokenBranchAtMatchesCode(index + 5, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 6, SUBTRACTION_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 7, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 8, DO)) {
+            createAndAddTokenBranchObjectFromIndices(FOR_START, index, index + 8);
+            return true;
+        }
+        else return false;
     }
     ////
 
