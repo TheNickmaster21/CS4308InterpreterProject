@@ -66,6 +66,7 @@ public class Codes {
     public static final int IF_START = 2003;
     public static final int FOR_START = 2004;
     public static final int DEFINITION = 2005;
+    public static final int FUNCTION_START = 2006;
 
     private Codes() {
 

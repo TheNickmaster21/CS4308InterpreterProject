@@ -77,6 +77,14 @@ public class Parser {
         if (forStatement(index))
             return true;
 
+        if (functionStart(index))
+            return true;
+
+            if (functionStatement(index))
+                return true;
+
+
+
         return false;
     }
 
@@ -211,6 +219,33 @@ public class Parser {
                 counter++;
             }
             if (tokenBranchAtMatchesCode(counter, END_FOR)) {
+                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean functionStart(final int index) {
+        if (tokenBranchAtMatchesCode(index, FUNCTION)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, RETURN)
+                && tokenBranchAtMatchesCode(index + 3, TYPE)
+                && tokenBranchAtMatchesCode(index + 4, INTEGER))
+        {
+            createAndAddTokenBranchObjectFromIndices(FUNCTION_START, index, index + 4);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean functionStatement(final int index) {
+        if (tokenBranchAtMatchesCode(index, FUNCTION_START)) {
+            int counter = index + 1;
+            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
+                counter++;
+            }
+            if (tokenBranchAtMatchesCode(counter, END_FUNCTION)) {
                 createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
                 return true;
             }
