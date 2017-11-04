@@ -35,6 +35,12 @@ public class Parser {
                 branchesChanged = buildParent(i);
             }
             if (!branchesChanged) {
+                remainingTokenBranches
+                        .forEach(tokenBranch -> {
+                            if (tokenBranch.getChildren() == null) {
+                                System.out.println(tokenBranch.getToken().getTypeCode());
+                            }
+                        });
                 throw new RuntimeException("The whole tree was traversed and it was not simplified."
                         + " There must be a syntactical error!");
             }

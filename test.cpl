@@ -38,5 +38,4 @@
       endfor
       set max_val = max_array(marray, kelements)
       display "Max Integer found: ", max_val
-      exit
   endfun main
