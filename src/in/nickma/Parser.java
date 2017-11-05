@@ -47,6 +47,7 @@ public class Parser {
         return remainingTokenBranches.get(0);
     }
 
+    //Check through all the possible grammar that is acceptable
     private boolean buildParent(final int index) {
         if (arrayIdentifier(index))
             return true;
@@ -462,6 +463,7 @@ public class Parser {
 
     // Utility methods
 
+    // Build a token branch from the start to end and assign it the given code
     private void createAndAddTokenBranchObjectFromIndices(
             final int code,
             final int start,
@@ -481,6 +483,7 @@ public class Parser {
         remainingTokenBranches.add(start, new TokenBranch(new ParsableToken(code, null, null), children));
     }
 
+    // Check if the index is valid and contains the given code
     private boolean tokenBranchAtMatchesCode(
             final int index,
             final int code) {
