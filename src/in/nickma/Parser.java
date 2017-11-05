@@ -1,5 +1,7 @@
 package in.nickma;
 
+import in.nickma.costants.Codes;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,9 +39,11 @@ public class Parser {
             if (!branchesChanged) {
                 remainingTokenBranches
                         .forEach(tokenBranch -> {
-                            if (tokenBranch.getChildren() == null) {
-                                System.out.println(tokenBranch.getToken().getTypeCode());
+                            if (Codes.getTokenTypeFromCode(tokenBranch.getToken().getTypeCode()) != null) {
+                                System.out.print(Codes.getTokenTypeFromCode(tokenBranch.getToken().getTypeCode()));
+                                System.out.print(' ');
                             }
+                            System.out.println(tokenBranch.getToken().getTypeCode());
                         });
                 throw new RuntimeException("The whole tree was traversed and it was not simplified."
                         + " There must be a syntactical error!");
@@ -54,6 +58,9 @@ public class Parser {
             return true;
 
         if (expression(index))
+            return true;
+
+        if (variableType(index))
             return true;
 
         if (set(index))
@@ -77,13 +84,33 @@ public class Parser {
         if (forStatement(index))
             return true;
 
+        if (whileStart(index))
+            return true;
+
+        if (whileStatement(index))
+            return true;
+
+        if (functionCall(index))
+            return true;
+
+        if (variable(index))
+            return true;
+
+        if (variables(index))
+            return true;
+
+        if (parameter(index))
+            return true;
+
+        if (parameters(index)) {
+            return true;
+        }
+
         if (functionStart(index))
             return true;
 
-            if (functionStatement(index))
-                return true;
-
-
+        if (functionStatement(index))
+            return true;
 
         return false;
     }
@@ -108,21 +135,28 @@ public class Parser {
                 || tokenBranchAtMatchesCode(index, STRING)) {
             createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index);
             return true;
-        } else {
-            //Multiple token ways to make an expression
-            if (tokenBranchAtMatchesCode(index, EXPRESSION)
-                    && (tokenBranchAtMatchesCode(index + 1, ADDITION_OPERATOR)
-                    || tokenBranchAtMatchesCode(index + 1, SUBTRACTION_OPERATOR)
-                    || tokenBranchAtMatchesCode(index + 1, MULTIPLICATION_OPERATOR)
-                    || tokenBranchAtMatchesCode(index + 1, DIVISION_OPERATOR)
-                    || tokenBranchAtMatchesCode(index + 1, EXPONENT_OPERATOR)
-                    || tokenBranchAtMatchesCode(index + 1, LESS_THAN_OPERATOR)
-                    || tokenBranchAtMatchesCode(index + 1, GREATER_THAN_OPERATOR))
-                    && tokenBranchAtMatchesCode(index + 2, EXPRESSION)) {
+        }
+        //Multiple token ways to make an expression
+        if (tokenBranchAtMatchesCode(index, EXPRESSION)
+                && (tokenBranchAtMatchesCode(index + 1, ADDITION_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, SUBTRACTION_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, MULTIPLICATION_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, DIVISION_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, EXPONENT_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, LESS_THAN_OPERATOR)
+                || tokenBranchAtMatchesCode(index + 1, GREATER_THAN_OPERATOR))
+                && tokenBranchAtMatchesCode(index + 2, EXPRESSION)) {
 
-                createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index + 2);
-                return true;
-            }
+            createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index + 2);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean variableType(final int index) {
+        if (tokenBranchAtMatchesCode(index, INTEGER_TYPE)) {
+            createAndAddTokenBranchObjectFromIndices(VARIABLE_TYPE, index, index);
+            return true;
         }
         return false;
     }
@@ -152,7 +186,7 @@ public class Parser {
                 && (tokenBranchAtMatchesCode(index + 4, INTEGER)
                 || tokenBranchAtMatchesCode(index + 4, FLOAT)
                 || tokenBranchAtMatchesCode(index + 4, STRING))) {
-            createAndAddTokenBranchObjectFromIndices(DEFINITION, index, index + 4);
+            createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 4);
             return true;
         }
         return false;
@@ -162,7 +196,6 @@ public class Parser {
         if (tokenBranchAtMatchesCode(index, IF)
                 && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
                 && tokenBranchAtMatchesCode(index + 2, THEN)) {
-
             createAndAddTokenBranchObjectFromIndices(IF_START, index, index + 2);
             return true;
         }
@@ -178,6 +211,54 @@ public class Parser {
             if (tokenBranchAtMatchesCode(counter, END_IF)) {
                 createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean whileStart(final int index) {
+        if (tokenBranchAtMatchesCode(index, WHILE)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, DO)) {
+
+            createAndAddTokenBranchObjectFromIndices(WHILE_START, index, index + 2);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean whileStatement(final int index) {
+        if (tokenBranchAtMatchesCode(index, WHILE_START)) {
+            int counter = index + 1;
+            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
+                counter++;
+            }
+            if (tokenBranchAtMatchesCode(counter, END_WHILE)) {
+                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean functionCall(final int index) {
+        //Look for the start of a function call
+        if (tokenBranchAtMatchesCode(index, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 1, LEFT_PARENTHESIS)) {
+            //Check for a call with no arguments
+            if (tokenBranchAtMatchesCode(index + 2, RIGHT_PARENTHESIS)) {
+                createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index + 2);
+                return true;
+            } else if (tokenBranchAtMatchesCode(index + 2, EXPRESSION)) {
+                int counter = index + 3;
+                while (tokenBranchAtMatchesCode(counter, COMMA)
+                        && tokenBranchAtMatchesCode(counter + 1, EXPRESSION)) {
+                    counter += 2;
+                }
+                if (tokenBranchAtMatchesCode(counter, RIGHT_PARENTHESIS)) {
+                    createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, counter);
+                    return true;
+                }
             }
         }
         return false;
@@ -226,13 +307,83 @@ public class Parser {
         return false;
     }
 
+    private boolean variable(final int index) {
+        //non-array variable
+        if (tokenBranchAtMatchesCode(index, DEFINE)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, OF)
+                && tokenBranchAtMatchesCode(index + 3, TYPE)
+                && tokenBranchAtMatchesCode(index + 4, VARIABLE_TYPE)) {
+            createAndAddTokenBranchObjectFromIndices(VARIABLE, index, index + 4);
+            return true;
+        }
+        //array variable
+        if (tokenBranchAtMatchesCode(index, DEFINE)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, ARRAY)
+                && tokenBranchAtMatchesCode(index + 3, LEFT_BRACKET)
+                && tokenBranchAtMatchesCode(index + 4, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 5, RIGHT_BRACKET)
+                && tokenBranchAtMatchesCode(index + 6, OF)
+                && tokenBranchAtMatchesCode(index + 7, TYPE)
+                && tokenBranchAtMatchesCode(index + 8, VARIABLE_TYPE)) {
+            createAndAddTokenBranchObjectFromIndices(VARIABLE, index, index + 8);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean variables(final int index) {
+        if (tokenBranchAtMatchesCode(index, VARIABLES)) {
+            int counter = index + 1;
+            while (tokenBranchAtMatchesCode(counter, VARIABLE)) {
+                counter++;
+            }
+            if (tokenBranchAtMatchesCode(counter, END_WHILE)) {
+                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean parameter(final int index) {
+        // Ensure that variables are not parsed as parameters
+        if (tokenBranchAtMatchesCode(index - 1, DEFINE)) {
+            return false;
+        }
+
+        if (tokenBranchAtMatchesCode(index, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 1, OF)
+                && tokenBranchAtMatchesCode(index + 2, TYPE)
+                && tokenBranchAtMatchesCode(index + 3, VARIABLE_TYPE)) {
+            createAndAddTokenBranchObjectFromIndices(PARAMETER, index, index + 3);
+            return true;
+        }
+        //array parameter
+        if (tokenBranchAtMatchesCode(index + 1, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, ARRAY)
+                && tokenBranchAtMatchesCode(index + 3, LEFT_BRACKET)
+                && tokenBranchAtMatchesCode(index + 5, RIGHT_BRACKET)
+                && tokenBranchAtMatchesCode(index + 6, OF)
+                && tokenBranchAtMatchesCode(index + 7, TYPE)
+                && tokenBranchAtMatchesCode(index + 8, VARIABLE_TYPE)) {
+            createAndAddTokenBranchObjectFromIndices(PARAMETER, index, index + 6);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean parameters(final int index) {
+        return false;
+    }
+
     private boolean functionStart(final int index) {
         if (tokenBranchAtMatchesCode(index, FUNCTION)
                 && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
                 && tokenBranchAtMatchesCode(index + 2, RETURN)
                 && tokenBranchAtMatchesCode(index + 3, TYPE)
-                && tokenBranchAtMatchesCode(index + 4, INTEGER))
-        {
+                && tokenBranchAtMatchesCode(index + 4, INTEGER)) {
             createAndAddTokenBranchObjectFromIndices(FUNCTION_START, index, index + 4);
             return true;
         }
