@@ -33,22 +33,16 @@ public class Parser {
         while (remainingTokenBranches.size() > 1) {
             branchesChanged = false;
             printDerivationStep();
-            for (int i = remainingTokenBranches.size() - 1; i > 0 && !branchesChanged; i--) {
+            for (int i = remainingTokenBranches.size() - 1; i >= 0 && !branchesChanged; i--) {
                 branchesChanged = buildParent(i);
             }
             if (!branchesChanged) {
-                remainingTokenBranches
-                        .forEach(tokenBranch -> {
-                            if (Codes.getTokenTypeFromCode(tokenBranch.getToken().getTypeCode()) != null) {
-                                System.out.print(Codes.getTokenTypeFromCode(tokenBranch.getToken().getTypeCode()));
-                                System.out.print(' ');
-                            }
-                            System.out.println(tokenBranch.getToken().getTypeCode());
-                        });
                 throw new RuntimeException("The whole tree was traversed and it was not simplified."
                         + " There must be a syntactical error!");
             }
         }
+
+        System.out.println("Successfully parsed input!");
 
         return remainingTokenBranches.get(0);
     }
@@ -109,9 +103,6 @@ public class Parser {
             return true;
 
         if (functionStart(index))
-            return true;
-
-        if (functionStatement(index))
             return true;
 
         if (functionHeader(index))
@@ -411,27 +402,13 @@ public class Parser {
                 return true;
             } else {
                 //function start without a return type
-                createAndAddTokenBranchObjectFromIndices(FUNCTION_START, index, index + 4);
+                createAndAddTokenBranchObjectFromIndices(FUNCTION_START, index, index + 1);
                 return true;
             }
         }
         return false;
     }
 
-
-    private boolean functionStatement(final int index) {
-        if (tokenBranchAtMatchesCode(index, FUNCTION_START)) {
-            int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
-                counter++;
-            }
-            if (tokenBranchAtMatchesCode(counter, END_FUNCTION)) {
-                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
-                return true;
-            }
-        }
-        return false;
-    }
 
     private boolean functionHeader(final int index) {
         // function with no functionParameters
@@ -507,7 +484,7 @@ public class Parser {
     private boolean tokenBranchAtMatchesCode(
             final int index,
             final int code) {
-        return index > 0 && index < remainingTokenBranches.size()
+        return index >= 0 && index < remainingTokenBranches.size()
                 && remainingTokenBranches.get(index)
                 .getToken().getTypeCode() == code;
     }
