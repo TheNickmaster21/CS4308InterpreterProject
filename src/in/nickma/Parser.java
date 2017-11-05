@@ -66,7 +66,7 @@ public class Parser {
         if (set(index))
             return true;
 
-        if (define(index))
+        if (returnStatement(index))
             return true;
 
         if (ifStart(index))
@@ -76,6 +76,9 @@ public class Parser {
             return true;
 
         if (display(index))
+            return true;
+
+        if (input(index))
             return true;
 
         if (forStart(index))
@@ -96,20 +99,28 @@ public class Parser {
         if (variable(index))
             return true;
 
-        if (variables(index))
+        if (functionVariables(index))
             return true;
 
         if (parameter(index))
             return true;
 
-        if (parameters(index)) {
+        if (functionParameters(index))
             return true;
-        }
 
         if (functionStart(index))
             return true;
 
         if (functionStatement(index))
+            return true;
+
+        if (functionHeader(index))
+            return true;
+
+        if (function(index))
+            return true;
+
+        if (file(index))
             return true;
 
         return false;
@@ -175,18 +186,10 @@ public class Parser {
         return false;
     }
 
-    private boolean define(final int index) {
-        //check if there is a type and variable
-        // if so, return true, pull out those branches, and add a new parent in their place
-        // if not, we need to throw an exception because the syntax is wrong
-        if (tokenBranchAtMatchesCode(index, DEFINE)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 2, OF)
-                && tokenBranchAtMatchesCode(index + 3, TYPE)
-                && (tokenBranchAtMatchesCode(index + 4, INTEGER)
-                || tokenBranchAtMatchesCode(index + 4, FLOAT)
-                || tokenBranchAtMatchesCode(index + 4, STRING))) {
-            createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 4);
+    private boolean returnStatement(final int index) {
+        if (tokenBranchAtMatchesCode(index, RETURN)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)) {
+            createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 1);
             return true;
         }
         return false;
@@ -279,6 +282,17 @@ public class Parser {
         return false;
     }
 
+    private boolean input(final int index) {
+        if (tokenBranchAtMatchesCode(index, INPUT)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, COMMA)
+                && tokenBranchAtMatchesCode(index + 3, EXPRESSION)) {
+            createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 3);
+            return true;
+        }
+        return false;
+    }
+
     private boolean forStart(final int index) {
         if (tokenBranchAtMatchesCode(index, FOR)
                 && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
@@ -333,22 +347,20 @@ public class Parser {
         return false;
     }
 
-    private boolean variables(final int index) {
+    private boolean functionVariables(final int index) {
         if (tokenBranchAtMatchesCode(index, VARIABLES)) {
             int counter = index + 1;
             while (tokenBranchAtMatchesCode(counter, VARIABLE)) {
                 counter++;
             }
-            if (tokenBranchAtMatchesCode(counter, END_WHILE)) {
-                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
-                return true;
-            }
+            createAndAddTokenBranchObjectFromIndices(FUNCTION_VARIABLES, index, counter - 1);
+            return true;
         }
         return false;
     }
 
     private boolean parameter(final int index) {
-        // Ensure that variables are not parsed as parameters
+        // Ensure that functionVariables are not parsed as functionParameters
         if (tokenBranchAtMatchesCode(index - 1, DEFINE)) {
             return false;
         }
@@ -361,34 +373,51 @@ public class Parser {
             return true;
         }
         //array parameter
-        if (tokenBranchAtMatchesCode(index + 1, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 2, ARRAY)
-                && tokenBranchAtMatchesCode(index + 3, LEFT_BRACKET)
-                && tokenBranchAtMatchesCode(index + 5, RIGHT_BRACKET)
-                && tokenBranchAtMatchesCode(index + 6, OF)
-                && tokenBranchAtMatchesCode(index + 7, TYPE)
-                && tokenBranchAtMatchesCode(index + 8, VARIABLE_TYPE)) {
+        if (tokenBranchAtMatchesCode(index, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 1, ARRAY)
+                && tokenBranchAtMatchesCode(index + 2, LEFT_BRACKET)
+                && tokenBranchAtMatchesCode(index + 3, RIGHT_BRACKET)
+                && tokenBranchAtMatchesCode(index + 4, OF)
+                && tokenBranchAtMatchesCode(index + 5, TYPE)
+                && tokenBranchAtMatchesCode(index + 6, VARIABLE_TYPE)) {
             createAndAddTokenBranchObjectFromIndices(PARAMETER, index, index + 6);
             return true;
         }
         return false;
     }
 
-    private boolean parameters(final int index) {
+    private boolean functionParameters(final int index) {
+        if (tokenBranchAtMatchesCode(index, PARAMETERS)
+                && tokenBranchAtMatchesCode(index + 1, PARAMETER)) {
+            int counter = index + 2;
+            while (tokenBranchAtMatchesCode(counter, COMMA)
+                    && tokenBranchAtMatchesCode(counter + 1, PARAMETER)) {
+                counter += 2;
+            }
+            createAndAddTokenBranchObjectFromIndices(FUNCTION_PARAMETERS, index, counter - 1);
+            return true;
+        }
         return false;
     }
 
     private boolean functionStart(final int index) {
         if (tokenBranchAtMatchesCode(index, FUNCTION)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 2, RETURN)
-                && tokenBranchAtMatchesCode(index + 3, TYPE)
-                && tokenBranchAtMatchesCode(index + 4, INTEGER)) {
-            createAndAddTokenBranchObjectFromIndices(FUNCTION_START, index, index + 4);
-            return true;
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)) {
+            // function start with a return type
+            if (tokenBranchAtMatchesCode(index + 2, RETURN)
+                    && tokenBranchAtMatchesCode(index + 3, TYPE)
+                    && tokenBranchAtMatchesCode(index + 4, VARIABLE_TYPE)) {
+                createAndAddTokenBranchObjectFromIndices(FUNCTION_START, index, index + 4);
+                return true;
+            } else {
+                //function start without a return type
+                createAndAddTokenBranchObjectFromIndices(FUNCTION_START, index, index + 4);
+                return true;
+            }
         }
         return false;
     }
+
 
     private boolean functionStatement(final int index) {
         if (tokenBranchAtMatchesCode(index, FUNCTION_START)) {
@@ -398,6 +427,56 @@ public class Parser {
             }
             if (tokenBranchAtMatchesCode(counter, END_FUNCTION)) {
                 createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean functionHeader(final int index) {
+        // function with no functionParameters
+        if (tokenBranchAtMatchesCode(index, FUNCTION_START)
+                && tokenBranchAtMatchesCode(index + 1, IS)
+                && tokenBranchAtMatchesCode(index + 2, FUNCTION_VARIABLES)
+                && tokenBranchAtMatchesCode(index + 3, BEGIN)) {
+            createAndAddTokenBranchObjectFromIndices(FUNCTION_HEADER, index, index + 3);
+            return true;
+        }
+        // function with functionParameters
+        if (tokenBranchAtMatchesCode(index, FUNCTION_START)
+                && tokenBranchAtMatchesCode(index + 1, FUNCTION_PARAMETERS)
+                && tokenBranchAtMatchesCode(index + 2, IS)
+                && tokenBranchAtMatchesCode(index + 3, FUNCTION_VARIABLES)
+                && tokenBranchAtMatchesCode(index + 4, BEGIN)) {
+            createAndAddTokenBranchObjectFromIndices(FUNCTION_HEADER, index, index + 4);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean function(final int index) {
+        if (tokenBranchAtMatchesCode(index, FUNCTION_HEADER)) {
+            int counter = index + 1;
+            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
+                counter++;
+            }
+            if (tokenBranchAtMatchesCode(counter, END_FUNCTION)
+                    && tokenBranchAtMatchesCode(counter + 1, EXPRESSION)) {
+                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter + 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean file(final int index) {
+        if (tokenBranchAtMatchesCode(index, BOF)) {
+            int counter = index + 1;
+            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
+                counter++;
+            }
+            if (tokenBranchAtMatchesCode(counter, EOF)) {
+                createAndAddTokenBranchObjectFromIndices(FILE, index, counter);
                 return true;
             }
         }

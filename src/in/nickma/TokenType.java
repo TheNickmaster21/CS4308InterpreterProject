@@ -41,9 +41,11 @@ public enum TokenType {
     THEN("then"),
     TO("to"),
     FOR("for"),
+    INPUT("input"),
 
     END_IF("endif"),
     END_WHILE("endwhile"),
+    END_FOR("endfor"),
     END_FUNCTION("endfun"),
 
     INTEGER_TYPE("integer"),

@@ -9,12 +9,12 @@ public class Codes {
 
     //Scanning in.nickma.costants.Codes
 
-    public static final int BOF = 0;
+    public static final int BOF = 1000;
 
-    public static final int INTEGER = 1000;
-    public static final int FLOAT = 1001;
-    public static final int IDENTIFIER = 1002;
-    public static final int STRING = 1003;
+    public static final int INTEGER = 1001;
+    public static final int FLOAT = 1002;
+    public static final int IDENTIFIER = 1003;
+    public static final int STRING = 1004;
 
     public static final int LEFT_PARENTHESIS = 1100;
     public static final int RIGHT_PARENTHESIS = 1101;
@@ -49,6 +49,7 @@ public class Codes {
     public static final int FOR = 1216;
     public static final int END_FOR = 1217;
     public static final int TO = 1218;
+    public static final int INPUT = 1219;
 
     public static final int END_IF = 1300;
     public static final int END_WHILE = 1301;
@@ -56,17 +57,28 @@ public class Codes {
 
     public static final int INTEGER_TYPE = 1400;
 
-    public static final int EOF = 9999;
+    public static final int EOF = 1999;
 
     //Additional grammar / parsing codes
 
     public static final int STATEMENT = 2000;
     public static final int EXPRESSION = 2001;
     public static final int ARRAY_IDENTIFIER = 2002;
-    public static final int IF_START = 2003;
-    public static final int FOR_START = 2004;
-    public static final int DEFINITION = 2005;
-    public static final int FUNCTION_START = 2006;
+
+    public static final int IF_START = 2100;
+    public static final int FOR_START = 2101;
+    public static final int WHILE_START = 2102;
+
+    public static final int VARIABLE_TYPE = 2200;
+
+    public static final int FUNCTION_START = 2500;
+    public static final int PARAMETER = 2501;
+    public static final int FUNCTION_PARAMETERS = 2502;
+    public static final int VARIABLE = 2503;
+    public static final int FUNCTION_VARIABLES = 2504;
+    public static final int FUNCTION_HEADER = 2505;
+
+    public static final int FILE = 2999;
 
     private Codes() {
 
@@ -114,6 +126,8 @@ public class Codes {
         codeLookup.put(TokenType.THEN, THEN);
         codeLookup.put(TokenType.TO, TO);
         codeLookup.put(TokenType.FOR, FOR);
+        codeLookup.put(TokenType.END_FOR, END_FOR);
+        codeLookup.put(TokenType.INPUT, INPUT);
 
         codeLookup.put(TokenType.END_IF, END_IF);
         codeLookup.put(TokenType.END_WHILE, END_WHILE);
