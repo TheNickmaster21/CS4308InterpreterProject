@@ -67,6 +67,7 @@ public class Codes {
     public static final int ELSEIF = 1232;
     public static final int OR = 1233;
     public static final int UNTIL = 1234;
+    public static final int PRINT = 1235;
     //
 
     public static final int END_IF = 1300;
