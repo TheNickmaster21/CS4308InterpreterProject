@@ -115,6 +115,12 @@ public class Parser {
         if (file(index))
             return true;
 
+        if (repeatStart(index))
+            return true;
+
+        if (repeatStatement(index))
+            return true;
+
         return false;
     }
 
@@ -164,6 +170,7 @@ public class Parser {
         return false;
     }
 
+    //ASSIGNMENT_STATEMENT!!!!!!!!!
     private boolean set(final int index) {
         //check if there is an equals sign and an expression next
         // if so, return true, pull out those branches, and add a new parent in their place
@@ -460,6 +467,36 @@ public class Parser {
         }
         return false;
     }
+
+    private boolean repeatStart(final int index) {
+        if(tokenBranchAtMatchesCode(index, REPEAT)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)){
+            int counter = index + 1;
+            while (tokenBranchAtMatchesCode(counter, EXPRESSION)){
+                counter++;
+            }
+            if (tokenBranchAtMatchesCode(counter, UNTIL)){
+                createAndAddTokenBranchObjectFromIndices(REPEAT_START, index, counter);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean repeatStatement(final int index) {
+        if (tokenBranchAtMatchesCode(index, REPEAT_START)){
+            int counter = index + 1;
+            while (tokenBranchAtMatchesCode(counter, STATEMENT)){
+                counter++;
+            }
+            if (tokenBranchAtMatchesCode(counter, END_REPEAT)) {
+                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     // Utility methods
 
