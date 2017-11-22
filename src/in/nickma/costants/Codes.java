@@ -73,6 +73,8 @@ public class Codes {
     public static final int END_IF = 1300;
     public static final int END_WHILE = 1301;
     public static final int END_FUNCTION = 1302;
+    public static final int END_REPEAT = 1303;
+    public static final int END_PRINT = 1304;
 
     public static final int INTEGER_TYPE = 1400;
 
