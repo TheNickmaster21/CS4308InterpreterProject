@@ -86,6 +86,10 @@ public class Codes {
     public static final int IF_START = 2100;
     public static final int FOR_START = 2101;
     public static final int WHILE_START = 2102;
+    //New codes as of 11/22
+    public static final int REPEAT_START = 2103;//
+    public static final int PRINT_START = 2104;//
+    //New codes as of 11/22
 
     public static final int VARIABLE_TYPE = 2200;
 
