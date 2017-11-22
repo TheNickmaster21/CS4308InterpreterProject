@@ -51,6 +51,24 @@ public class Codes {
     public static final int TO = 1218;
     public static final int INPUT = 1219;
 
+    //New codes as of 11/22 3:35pm
+    public static final int AND = 1220;
+    public static final int IN = 1221;
+    public static final int REPEAT = 1222;
+    public static final int END = 1223;
+    public static final int BREAK = 1224;
+    public static final int FALSE = 1225;
+    public static final int TRUE = 1226;
+    public static final int LOCAL = 1227;
+    public static final int BREAK = 1228;
+    public static final int NIL = 1229;
+    public static final int ELSE = 1230;
+    public static final int NOT = 1231;
+    public static final int ELSEIF = 1232;
+    public static final int OR = 1233;
+    public static final int UNTIL = 1234;
+    //
+
     public static final int END_IF = 1300;
     public static final int END_WHILE = 1301;
     public static final int END_FUNCTION = 1302;
