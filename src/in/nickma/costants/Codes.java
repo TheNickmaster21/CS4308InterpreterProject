@@ -60,14 +60,13 @@ public class Codes {
     public static final int FALSE = 1225;
     public static final int TRUE = 1226;
     public static final int LOCAL = 1227;
-    public static final int BREAK = 1228;
-    public static final int NIL = 1229;
-    public static final int ELSE = 1230;
-    public static final int NOT = 1231;
-    public static final int ELSEIF = 1232;
-    public static final int OR = 1233;
-    public static final int UNTIL = 1234;
-    public static final int PRINT = 1235;
+    public static final int NIL = 1228;
+    public static final int ELSE = 1229;
+    public static final int NOT = 1230;
+    public static final int ELSEIF = 1231;
+    public static final int OR = 1232;
+    public static final int UNTIL = 1233;
+    public static final int PRINT = 1234;
     //
 
     public static final int END_IF = 1300;

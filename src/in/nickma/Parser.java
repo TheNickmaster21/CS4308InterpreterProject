@@ -121,6 +121,12 @@ public class Parser {
         if (repeatStatement(index))
             return true;
 
+        if (printStart(index))
+            return true;
+
+        if (printStatement(index))
+            return true;
+
         return false;
     }
 
@@ -469,13 +475,13 @@ public class Parser {
     }
 
     private boolean repeatStart(final int index) {
-        if(tokenBranchAtMatchesCode(index, REPEAT)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)){
+        if (tokenBranchAtMatchesCode(index, REPEAT)
+                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)) {
             int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, EXPRESSION)){
+            while (tokenBranchAtMatchesCode(counter, EXPRESSION)) {
                 counter++;
             }
-            if (tokenBranchAtMatchesCode(counter, UNTIL)){
+            if (tokenBranchAtMatchesCode(counter, UNTIL)) {
                 createAndAddTokenBranchObjectFromIndices(REPEAT_START, index, counter);
                 return true;
             }
@@ -484,9 +490,9 @@ public class Parser {
     }
 
     private boolean repeatStatement(final int index) {
-        if (tokenBranchAtMatchesCode(index, REPEAT_START)){
+        if (tokenBranchAtMatchesCode(index, REPEAT_START)) {
             int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, STATEMENT)){
+            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
                 counter++;
             }
             if (tokenBranchAtMatchesCode(counter, END_REPEAT)) {
@@ -496,6 +502,33 @@ public class Parser {
         }
         return false;
     }
+
+    private boolean printStart(final int index) {
+        if (tokenBranchAtMatchesCode(index, PRINT)
+                && tokenBranchAtMatchesCode(index + 1, LEFT_PARENTHESIS)
+                && tokenBranchAtMatchesCode(index + 2, EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 3, RIGHT_PARENTHESIS)) {
+            createAndAddTokenBranchObjectFromIndices(PRINT_START, index, index + 3);
+            return true;
+        }
+        return false;
+}
+
+
+    private boolean printStatement(final int index) {
+        if (tokenBranchAtMatchesCode(index, PRINT_START)){
+            int counter = index + 1;
+            while (tokenBranchAtMatchesCode(counter, STATEMENT)){
+                counter++;
+            }
+            if (tokenBranchAtMatchesCode(counter, END_PRINT)) {
+                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
     // Utility methods
