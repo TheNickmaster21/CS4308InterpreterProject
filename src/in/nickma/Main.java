@@ -74,9 +74,7 @@ public class Main {
                     if (TokenType.IDENTIFIER.equals(token.getTokenType())) {
                         parameterCode = parameterLookup.size();
                         parameterLookup.put(parameterCode, token.getLexeme());
-                    } else if (TokenType.INTEGER.equals(token.getTokenType())
-                            || TokenType.FLOAT.equals(token.getTokenType())
-                            || TokenType.STRING.equals(token.getTokenType())) {
+                    } else if (TokenType.LITERAL_INTEGER.equals(token.getTokenType())) {
                         literalCode = literalLookup.size();
                         literalLookup.put(literalCode, token.getLexeme());
                     }

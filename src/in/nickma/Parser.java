@@ -47,487 +47,229 @@ public class Parser {
 
     //Check through all the possible grammar that is acceptable
     private boolean buildParent(final int index) {
-        if (arrayIdentifier(index))
+        if (program(index))
             return true;
 
-        if (expression(index))
+        if (block(index))
             return true;
 
-        if (variableType(index))
-            return true;
-
-        if (set(index))
-            return true;
-
-        if (returnStatement(index))
-            return true;
-
-        if (ifStart(index))
+        if (statement(index))
             return true;
 
         if (ifStatement(index))
             return true;
 
-        if (display(index))
-            return true;
-
-        if (input(index))
-            return true;
-
-        if (forStart(index))
-            return true;
-
-        if (forStatement(index))
-            return true;
-
-        if (whileStart(index))
-            return true;
-
         if (whileStatement(index))
             return true;
 
-        if (functionCall(index))
-            return true;
-
-        if (variable(index))
-            return true;
-
-        if (functionVariables(index))
-            return true;
-
-        if (parameter(index))
-            return true;
-
-        if (functionParameters(index))
-            return true;
-
-        if (functionStart(index))
-            return true;
-
-        if (functionHeader(index))
-            return true;
-
-        if (function(index))
-            return true;
-
-        if (file(index))
-            return true;
-
-        if (repeatStart(index))
+        if (assignmentStatement(index))
             return true;
 
         if (repeatStatement(index))
             return true;
 
-        if (printStart(index))
-            return true;
-
         if (printStatement(index))
             return true;
 
+        if (booleanExpression(index))
+            return true;
+
+        if (relativeOperator(index))
+            return true;
+
+        if (arithmeticExpression(index))
+            return true;
+
+        if (arithmeticOperator(index))
+            return true;
+
         return false;
     }
 
-    private boolean arrayIdentifier(final int index) {
-        if (tokenBranchAtMatchesCode(index, IDENTIFIER)
-                && tokenBranchAtMatchesCode(index + 1, LEFT_BRACKET)
-                && tokenBranchAtMatchesCode(index + 2, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 3, RIGHT_BRACKET)) {
-            createAndAddTokenBranchObjectFromIndices(ARRAY_IDENTIFIER, index, index + 3);
+    private boolean program(final int index) {
+        if (tokenBranchAtMatchesCode(index, FUNCTION)
+                && tokenBranchAtMatchesCode(index + 1, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 2, LEFT_PARENTHESIS)
+                && tokenBranchAtMatchesCode(index + 3, RIGHT_PARENTHESIS)
+                && tokenBranchAtMatchesCode(index + 4, BLOCK)
+                && tokenBranchAtMatchesCode(index + 5, END)) {
+            createAndAddTokenBranchObjectFromIndices(PROGRAM, index, index + 5);
             return true;
         }
         return false;
     }
 
-    private boolean expression(final int index) {
-        //Single token ways to make an expression
-        if (tokenBranchAtMatchesCode(index, IDENTIFIER)
-                || tokenBranchAtMatchesCode(index, ARRAY_IDENTIFIER)
-                || tokenBranchAtMatchesCode(index, INTEGER)
-                || tokenBranchAtMatchesCode(index, FLOAT)
-                || tokenBranchAtMatchesCode(index, STRING)) {
-            createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index);
+    private boolean block(final int index) {
+        if (tokenBranchAtMatchesCode(index, STATEMENT)
+                && tokenBranchAtMatchesCode(index + 1, BLOCK)) {
+            createAndAddTokenBranchObjectFromIndices(BLOCK, index, index + 1);
             return true;
-        }
-        //Multiple token ways to make an expression
-        if (tokenBranchAtMatchesCode(index, EXPRESSION)
-                && (tokenBranchAtMatchesCode(index + 1, ADDITION_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, SUBTRACTION_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, MULTIPLICATION_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, DIVISION_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, EXPONENT_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, LESS_THAN_OPERATOR)
-                || tokenBranchAtMatchesCode(index + 1, GREATER_THAN_OPERATOR))
-                && tokenBranchAtMatchesCode(index + 2, EXPRESSION)) {
-
-            createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index + 2);
+        } else if (tokenBranchAtMatchesCode(index, STATEMENT)) {
+            createAndAddTokenBranchObjectFromIndices(BLOCK, index, index);
             return true;
         }
         return false;
     }
 
-    private boolean variableType(final int index) {
-        if (tokenBranchAtMatchesCode(index, INTEGER_TYPE)) {
-            createAndAddTokenBranchObjectFromIndices(VARIABLE_TYPE, index, index);
-            return true;
-        }
-        return false;
-    }
-
-    //ASSIGNMENT_STATEMENT!!!!!!!!!
-    private boolean set(final int index) {
-        //check if there is an equals sign and an expression next
-        // if so, return true, pull out those branches, and add a new parent in their place
-        if (tokenBranchAtMatchesCode(index, SET)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION) // Only valid if the expression consists of one identifier
-                && tokenBranchAtMatchesCode(index + 2, EQUAL_SIGN)
-                && tokenBranchAtMatchesCode(index + 3, EXPRESSION)) {
-
-            createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 3);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean returnStatement(final int index) {
-        if (tokenBranchAtMatchesCode(index, RETURN)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)) {
-            createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 1);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean ifStart(final int index) {
-        if (tokenBranchAtMatchesCode(index, IF)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 2, THEN)) {
-            createAndAddTokenBranchObjectFromIndices(IF_START, index, index + 2);
+    private boolean statement(final int index) {
+        if (tokenBranchAtMatchesCode(index, IF_STATEMENT)
+                || tokenBranchAtMatchesCode(index, ASSIGNMENT_STATEMENT)
+                || tokenBranchAtMatchesCode(index, WHILE_STATEMENT)
+                || tokenBranchAtMatchesCode(index, PRINT_STATEMENT)
+                || tokenBranchAtMatchesCode(index, REPEAT_STATEMENT)) {
+            createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index);
             return true;
         }
         return false;
     }
 
     private boolean ifStatement(final int index) {
-        if (tokenBranchAtMatchesCode(index, IF_START)) {
-            int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
-                counter++;
-            }
-            if (tokenBranchAtMatchesCode(counter, END_IF)) {
-                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean whileStart(final int index) {
-        if (tokenBranchAtMatchesCode(index, WHILE)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 2, DO)) {
-
-            createAndAddTokenBranchObjectFromIndices(WHILE_START, index, index + 2);
+        if (tokenBranchAtMatchesCode(index, IF)
+                && tokenBranchAtMatchesCode(index + 1, BOOLEAN_EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, THEN)
+                && tokenBranchAtMatchesCode(index + 3, BLOCK)
+                && tokenBranchAtMatchesCode(index + 4, ELSE)
+                && tokenBranchAtMatchesCode(index + 5, BLOCK)
+                && tokenBranchAtMatchesCode(index + 6, END)) {
+            createAndAddTokenBranchObjectFromIndices(IF_STATEMENT, index, index + 6);
+            return true;
+        } else if (tokenBranchAtMatchesCode(index, IF)
+                && tokenBranchAtMatchesCode(index + 1, BOOLEAN_EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, THEN)
+                && tokenBranchAtMatchesCode(index + 3, BLOCK)
+                && tokenBranchAtMatchesCode(index + 4, END)) {
+            createAndAddTokenBranchObjectFromIndices(IF_STATEMENT, index, index + 4);
             return true;
         }
         return false;
     }
 
     private boolean whileStatement(final int index) {
-        if (tokenBranchAtMatchesCode(index, WHILE_START)) {
-            int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
-                counter++;
-            }
-            if (tokenBranchAtMatchesCode(counter, END_WHILE)) {
-                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean functionCall(final int index) {
-        //Look for the start of a function call
-        if (tokenBranchAtMatchesCode(index, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 1, LEFT_PARENTHESIS)) {
-            //Check for a call with no arguments
-            if (tokenBranchAtMatchesCode(index + 2, RIGHT_PARENTHESIS)) {
-                createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, index + 2);
-                return true;
-            } else if (tokenBranchAtMatchesCode(index + 2, EXPRESSION)) {
-                int counter = index + 3;
-                while (tokenBranchAtMatchesCode(counter, COMMA)
-                        && tokenBranchAtMatchesCode(counter + 1, EXPRESSION)) {
-                    counter += 2;
-                }
-                if (tokenBranchAtMatchesCode(counter, RIGHT_PARENTHESIS)) {
-                    createAndAddTokenBranchObjectFromIndices(EXPRESSION, index, counter);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean display(final int index) {
-        if (tokenBranchAtMatchesCode(index, DISPLAY)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)) {
-            if (tokenBranchAtMatchesCode(index + 2, COMMA)
-                    && tokenBranchAtMatchesCode(index + 3, EXPRESSION)) {
-                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 3);
-                return true;
-            } else {
-                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 1);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean input(final int index) {
-        if (tokenBranchAtMatchesCode(index, INPUT)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 2, COMMA)
-                && tokenBranchAtMatchesCode(index + 3, EXPRESSION)) {
-            createAndAddTokenBranchObjectFromIndices(STATEMENT, index, index + 3);
+        if (tokenBranchAtMatchesCode(index, WHILE)
+                && tokenBranchAtMatchesCode(index + 1, BOOLEAN_EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 2, DO)
+                && tokenBranchAtMatchesCode(index + 3, BLOCK)
+                && tokenBranchAtMatchesCode(index + 4, END)) {
+            createAndAddTokenBranchObjectFromIndices(WHILE_STATEMENT, index, index + 4);
             return true;
         }
         return false;
     }
 
-    private boolean forStart(final int index) {
-        if (tokenBranchAtMatchesCode(index, FOR)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 2, EQUAL_SIGN)
-                && tokenBranchAtMatchesCode(index + 3, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 4, TO)
-                && tokenBranchAtMatchesCode(index + 5, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 6, DO)) {
-            createAndAddTokenBranchObjectFromIndices(FOR_START, index, index + 6);
+    private boolean assignmentStatement(final int index) {
+        if (tokenBranchAtMatchesCode(index, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 1, ASSIGNMENT_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 2, ARITHMETIC_EXPRESSION)) {
+            createAndAddTokenBranchObjectFromIndices(ASSIGNMENT_STATEMENT, index, index + 2);
             return true;
-        }
-        return false;
-    }
-
-    private boolean forStatement(final int index) {
-        if (tokenBranchAtMatchesCode(index, FOR_START)) {
-            int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
-                counter++;
-            }
-            if (tokenBranchAtMatchesCode(counter, END_FOR)) {
-                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean variable(final int index) {
-        //non-array variable
-        if (tokenBranchAtMatchesCode(index, DEFINE)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 2, OF)
-                && tokenBranchAtMatchesCode(index + 3, TYPE)
-                && tokenBranchAtMatchesCode(index + 4, VARIABLE_TYPE)) {
-            createAndAddTokenBranchObjectFromIndices(VARIABLE, index, index + 4);
+        } else if (tokenBranchAtMatchesCode(index, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 1, ASSIGNMENT_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 2, IDENTIFIER)) {
+            createAndAddTokenBranchObjectFromIndices(ASSIGNMENT_STATEMENT, index, index + 2);
             return true;
-        }
-        //array variable
-        if (tokenBranchAtMatchesCode(index, DEFINE)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 2, ARRAY)
-                && tokenBranchAtMatchesCode(index + 3, LEFT_BRACKET)
-                && tokenBranchAtMatchesCode(index + 4, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 5, RIGHT_BRACKET)
-                && tokenBranchAtMatchesCode(index + 6, OF)
-                && tokenBranchAtMatchesCode(index + 7, TYPE)
-                && tokenBranchAtMatchesCode(index + 8, VARIABLE_TYPE)) {
-            createAndAddTokenBranchObjectFromIndices(VARIABLE, index, index + 8);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean functionVariables(final int index) {
-        if (tokenBranchAtMatchesCode(index, VARIABLES)) {
-            int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, VARIABLE)) {
-                counter++;
-            }
-            createAndAddTokenBranchObjectFromIndices(FUNCTION_VARIABLES, index, counter - 1);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean parameter(final int index) {
-        // Ensure that functionVariables are not parsed as functionParameters
-        if (tokenBranchAtMatchesCode(index - 1, DEFINE)) {
-            return false;
-        }
-
-        if (tokenBranchAtMatchesCode(index, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 1, OF)
-                && tokenBranchAtMatchesCode(index + 2, TYPE)
-                && tokenBranchAtMatchesCode(index + 3, VARIABLE_TYPE)) {
-            createAndAddTokenBranchObjectFromIndices(PARAMETER, index, index + 3);
-            return true;
-        }
-        //array parameter
-        if (tokenBranchAtMatchesCode(index, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 1, ARRAY)
-                && tokenBranchAtMatchesCode(index + 2, LEFT_BRACKET)
-                && tokenBranchAtMatchesCode(index + 3, RIGHT_BRACKET)
-                && tokenBranchAtMatchesCode(index + 4, OF)
-                && tokenBranchAtMatchesCode(index + 5, TYPE)
-                && tokenBranchAtMatchesCode(index + 6, VARIABLE_TYPE)) {
-            createAndAddTokenBranchObjectFromIndices(PARAMETER, index, index + 6);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean functionParameters(final int index) {
-        if (tokenBranchAtMatchesCode(index, PARAMETERS)
-                && tokenBranchAtMatchesCode(index + 1, PARAMETER)) {
-            int counter = index + 2;
-            while (tokenBranchAtMatchesCode(counter, COMMA)
-                    && tokenBranchAtMatchesCode(counter + 1, PARAMETER)) {
-                counter += 2;
-            }
-            createAndAddTokenBranchObjectFromIndices(FUNCTION_PARAMETERS, index, counter - 1);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean functionStart(final int index) {
-        if (tokenBranchAtMatchesCode(index, FUNCTION)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)) {
-            // function start with a return type
-            if (tokenBranchAtMatchesCode(index + 2, RETURN)
-                    && tokenBranchAtMatchesCode(index + 3, TYPE)
-                    && tokenBranchAtMatchesCode(index + 4, VARIABLE_TYPE)) {
-                createAndAddTokenBranchObjectFromIndices(FUNCTION_START, index, index + 4);
-                return true;
-            } else {
-                //function start without a return type
-                createAndAddTokenBranchObjectFromIndices(FUNCTION_START, index, index + 1);
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    private boolean functionHeader(final int index) {
-        // function with no functionParameters
-        if (tokenBranchAtMatchesCode(index, FUNCTION_START)
-                && tokenBranchAtMatchesCode(index + 1, IS)
-                && tokenBranchAtMatchesCode(index + 2, FUNCTION_VARIABLES)
-                && tokenBranchAtMatchesCode(index + 3, BEGIN)) {
-            createAndAddTokenBranchObjectFromIndices(FUNCTION_HEADER, index, index + 3);
-            return true;
-        }
-        // function with functionParameters
-        if (tokenBranchAtMatchesCode(index, FUNCTION_START)
-                && tokenBranchAtMatchesCode(index + 1, FUNCTION_PARAMETERS)
-                && tokenBranchAtMatchesCode(index + 2, IS)
-                && tokenBranchAtMatchesCode(index + 3, FUNCTION_VARIABLES)
-                && tokenBranchAtMatchesCode(index + 4, BEGIN)) {
-            createAndAddTokenBranchObjectFromIndices(FUNCTION_HEADER, index, index + 4);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean function(final int index) {
-        if (tokenBranchAtMatchesCode(index, FUNCTION_HEADER)) {
-            int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
-                counter++;
-            }
-            if (tokenBranchAtMatchesCode(counter, END_FUNCTION)
-                    && tokenBranchAtMatchesCode(counter + 1, EXPRESSION)) {
-                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter + 1);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean file(final int index) {
-        if (tokenBranchAtMatchesCode(index, BOF)) {
-            int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
-                counter++;
-            }
-            if (tokenBranchAtMatchesCode(counter, EOF)) {
-                createAndAddTokenBranchObjectFromIndices(FILE, index, counter);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean repeatStart(final int index) {
-        if (tokenBranchAtMatchesCode(index, REPEAT)
-                && tokenBranchAtMatchesCode(index + 1, EXPRESSION)) {
-            int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, EXPRESSION)) {
-                counter++;
-            }
-            if (tokenBranchAtMatchesCode(counter, UNTIL)) {
-                createAndAddTokenBranchObjectFromIndices(REPEAT_START, index, counter);
-                return true;
-            }
         }
         return false;
     }
 
     private boolean repeatStatement(final int index) {
-        if (tokenBranchAtMatchesCode(index, REPEAT_START)) {
-            int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, STATEMENT)) {
-                counter++;
-            }
-            if (tokenBranchAtMatchesCode(counter, END_REPEAT)) {
-                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean printStart(final int index) {
-        if (tokenBranchAtMatchesCode(index, PRINT)
-                && tokenBranchAtMatchesCode(index + 1, LEFT_PARENTHESIS)
-                && tokenBranchAtMatchesCode(index + 2, EXPRESSION)
-                && tokenBranchAtMatchesCode(index + 3, RIGHT_PARENTHESIS)) {
-            createAndAddTokenBranchObjectFromIndices(PRINT_START, index, index + 3);
+        if (tokenBranchAtMatchesCode(index, REPEAT)
+                && tokenBranchAtMatchesCode(index + 1, BLOCK)
+                && tokenBranchAtMatchesCode(index + 2, UNTIL)
+                && tokenBranchAtMatchesCode(index + 3, BOOLEAN_EXPRESSION)) {
+            createAndAddTokenBranchObjectFromIndices(REPEAT_STATEMENT, index, index + 3);
             return true;
         }
         return false;
-}
-
+    }
 
     private boolean printStatement(final int index) {
-        if (tokenBranchAtMatchesCode(index, PRINT_START)){
-            int counter = index + 1;
-            while (tokenBranchAtMatchesCode(counter, STATEMENT)){
-                counter++;
-            }
-            if (tokenBranchAtMatchesCode(counter, END_PRINT)) {
-                createAndAddTokenBranchObjectFromIndices(STATEMENT, index, counter);
-                return true;
-            }
+        if (tokenBranchAtMatchesCode(index, PRINT)
+                && tokenBranchAtMatchesCode(index + 1, LEFT_PARENTHESIS)
+                && tokenBranchAtMatchesCode(index + 2, ARITHMETIC_EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 3, RIGHT_PARENTHESIS)) {
+            createAndAddTokenBranchObjectFromIndices(PRINT_STATEMENT, index, index + 3);
+            return true;
+        } else if (tokenBranchAtMatchesCode(index, PRINT)
+                && tokenBranchAtMatchesCode(index + 1, LEFT_PARENTHESIS)
+                && tokenBranchAtMatchesCode(index + 2, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 3, RIGHT_PARENTHESIS)) {
+            createAndAddTokenBranchObjectFromIndices(PRINT_STATEMENT, index, index + 3);
+            return true;
         }
         return false;
     }
 
+    private boolean booleanExpression(final int index) {
+        if (tokenBranchAtMatchesCode(index, ARITHMETIC_EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 1, RELATIVE_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 2, ARITHMETIC_EXPRESSION)) {
+            createAndAddTokenBranchObjectFromIndices(BOOLEAN_EXPRESSION, index, index + 2);
+            return true;
+        } else if (tokenBranchAtMatchesCode(index, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 1, RELATIVE_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 2, ARITHMETIC_EXPRESSION)) {
+            createAndAddTokenBranchObjectFromIndices(BOOLEAN_EXPRESSION, index, index + 2);
+            return true;
+        } else if (tokenBranchAtMatchesCode(index, ARITHMETIC_EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 1, RELATIVE_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 2, IDENTIFIER)) {
+            createAndAddTokenBranchObjectFromIndices(BOOLEAN_EXPRESSION, index, index + 2);
+            return true;
+        } else if (tokenBranchAtMatchesCode(index, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 1, RELATIVE_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 2, IDENTIFIER)) {
+            createAndAddTokenBranchObjectFromIndices(BOOLEAN_EXPRESSION, index, index + 2);
+            return true;
+        }
+        return false;
+    }
 
+    private boolean relativeOperator(final int index) {
+        if (tokenBranchAtMatchesCode(index, LE_OPERATOR)
+                || tokenBranchAtMatchesCode(index, LT_OPERATOR)
+                || tokenBranchAtMatchesCode(index, GE_OPERATOR)
+                || tokenBranchAtMatchesCode(index, GT_OPERATOR)
+                || tokenBranchAtMatchesCode(index, EQ_OPERATOR)
+                || tokenBranchAtMatchesCode(index, NE_OPERATOR)) {
+            createAndAddTokenBranchObjectFromIndices(RELATIVE_OPERATOR, index, index);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean arithmeticExpression(final int index) {
+        if (tokenBranchAtMatchesCode(index, LITERAL_INTEGER)) {
+            createAndAddTokenBranchObjectFromIndices(ARITHMETIC_EXPRESSION, index, index);
+            return true;
+        } else if (tokenBranchAtMatchesCode(index, ARITHMETIC_EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 1, ARITHMETIC_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 2, ARITHMETIC_EXPRESSION)) {
+            createAndAddTokenBranchObjectFromIndices(ARITHMETIC_EXPRESSION, index, index + 2);
+            return true;
+        } else if (tokenBranchAtMatchesCode(index, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 1, ARITHMETIC_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 2, ARITHMETIC_EXPRESSION)) {
+            createAndAddTokenBranchObjectFromIndices(ARITHMETIC_EXPRESSION, index, index + 2);
+            return true;
+        } else if (tokenBranchAtMatchesCode(index, IDENTIFIER)
+                && tokenBranchAtMatchesCode(index + 1, ARITHMETIC_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 2, IDENTIFIER)) {
+            createAndAddTokenBranchObjectFromIndices(ARITHMETIC_EXPRESSION, index, index + 2);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean arithmeticOperator(final int index) {
+        if (tokenBranchAtMatchesCode(index, ADD_OPERATOR)
+                || tokenBranchAtMatchesCode(index, SUB_OPERATOR)
+                || tokenBranchAtMatchesCode(index, MUL_OPERATOR)
+                || tokenBranchAtMatchesCode(index, DIV_OPERATOR)) {
+            createAndAddTokenBranchObjectFromIndices(ARITHMETIC_OPERATOR, index, index);
+            return true;
+        }
+        return false;
+    }
 
     // Utility methods
 

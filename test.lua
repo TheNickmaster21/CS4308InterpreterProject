@@ -8,9 +8,14 @@ function test()
         c = c + 1
     end
 
-    if a > b then
-        print a
+    if a > b - c then
+        print(a)
     else
-        print b
+        print(b)
+    end
+
+    if c == b then
+        print(c)
+        print(b)
     end
 end

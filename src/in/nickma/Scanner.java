@@ -28,8 +28,6 @@ public class Scanner {
         rowNumber = 1;
         columnNumber = 1;
         List<Token> tokens = new LinkedList<>();
-        tokens.add(buildToken(TokenType.BOF, ""));
-
         advancePastWhiteSpace();
 
         Token nextToken = next();
@@ -38,7 +36,6 @@ public class Scanner {
             nextToken = next();
         }
 
-        tokens.add(buildToken(TokenType.EOF, ""));
         return tokens;
     }
 
@@ -49,6 +46,13 @@ public class Scanner {
         }
 
         advancePastWhiteSpace();
+
+        Token doubleCharacterToken = doubleCharacterParseNode();
+        if (doubleCharacterToken != null) {
+            advanceAndTrackLineNumber();
+            advanceAndTrackLineNumber();
+            return doubleCharacterToken;
+        }
 
         Token singleCharacterToken = singleCharacterParseNode(); // First check for a single character token (e.g. '=')
         if (singleCharacterToken != null) {
@@ -70,9 +74,6 @@ public class Scanner {
             if (tokenType != null) {
                 return buildToken(tokenType, runningLexeme); // We found a token
             }
-            if (runningLexeme.length() > 1 && runningLexeme.charAt(runningLexeme.length() - 1) == '"') {
-                break; // We are at the end of a literal string and need to escape
-            }
         }
         // We ran out of characters!
         if (!runningLexeme.isEmpty() && runningLexeme.matches(".*\\w.*")) {
@@ -86,22 +87,23 @@ public class Scanner {
     private Token getNumberOrStringTokenFromLexeme(final String lexeme) {
         try {
             String s = String.valueOf(Integer.parseInt(lexeme)); // If the parse fails, the lexeme is not an integer
-            return buildToken(TokenType.INTEGER, s);
+            return buildToken(TokenType.LITERAL_INTEGER, s);
         } catch (NumberFormatException e) {
             // Also ugly and also works
         }
-        try {
-            String s = String.valueOf(Float.parseFloat(lexeme)); // If the parse fails, the lexeme is not a float
-            return buildToken(TokenType.FLOAT, s);
-        } catch (NumberFormatException e) {
-            // Ugly but it works
-        }
-        if (lexeme.charAt(0) == '"' && lexeme.charAt(lexeme.length() - 1) == '"') {
-            return buildToken(TokenType.STRING, lexeme); // lexeme has quotes so it is a string
-        } else {
-            return buildToken(TokenType.IDENTIFIER, lexeme); // blocks of text are simply just identifiers
-        }
+        return buildToken(TokenType.IDENTIFIER, lexeme); // blocks of text are simply just identifiers
+    }
 
+    //Looks ahead to check for double character tokens so we don't accidentally get two single character tokens
+    private Token doubleCharacterParseNode() {
+        if (index < input.length()) {
+            String doubleString = String.valueOf(input.charAt(index)) + String.valueOf(input.charAt(index + 1));
+            TokenType tokenType = TokenType.getMatchingToken(doubleString);
+            if (tokenType != null) {
+                return buildToken(tokenType, String.valueOf(doubleString));
+            }
+        }
+        return null;
     }
 
     // Check if there is a token that can be built with a single character
@@ -113,6 +115,7 @@ public class Scanner {
             return null;
         }
     }
+
 
     // Move the index forward past any whitespace
     private void advancePastWhiteSpace() {

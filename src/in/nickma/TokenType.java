@@ -4,54 +4,33 @@ import java.util.HashMap;
 
 public enum TokenType {
 
-    INTEGER(null),
-    FLOAT(null),
+    LITERAL_INTEGER(null),
     IDENTIFIER(null),
-    STRING(null),
 
     LEFT_PARENTHESIS("("),
     RIGHT_PARENTHESIS(")"),
-    LEFT_BRACKET("["),
-    RIGHT_BRACKET("]"),
-    EQUAL_SIGN("="),
-    ADDITION_OPERATOR("+"),
-    SUBTRACTION_OPERATOR("-"),
-    MULTIPLICATION_OPERATOR("*"),
-    DIVISION_OPERATOR("/"),
-    EXPONENT_OPERATOR("^"),
-    LESS_THAN_OPERATOR("<"),
-    GREATER_THAN_OPERATOR(">"),
-    COMMA(","),
+    ASSIGNMENT_OPERATOR("="),
+    ADD_OPERATOR("+"),
+    SUB_OPERATOR("-"),
+    MUL_OPERATOR("*"),
+    DIV_OPERATOR("/"),
+    LE_OPERATOR("<="),
+    LT_OPERATOR("<"),
+    GE_OPERATOR(">="),
+    GT_OPERATOR(">"),
+    EQ_OPERATOR("=="),
+    NE_OPERATOR("~="),
 
-    SET("set"),
-    DEFINE("define"),
-    ARRAY("array"),
     FUNCTION("function"),
-    RETURN("return"),
-    OF("of"),
-    TYPE("type"),
-    PARAMETERS("parameters"),
-    IS("is"),
-    VARIABLES("variables"),
-    BEGIN("begin"),
-    DISPLAY("display"),
     WHILE("while"),
     DO("do"),
     IF("if"),
     THEN("then"),
-    TO("to"),
-    FOR("for"),
-    INPUT("input"),
-
-    END_IF("endif"),
-    END_WHILE("endwhile"),
-    END_FOR("endfor"),
-    END_FUNCTION("endfun"),
-
-    INTEGER_TYPE("integer"),
-
-    BOF(null),
-    EOF(null);
+    ELSE("else"),
+    REPEAT("repeat"),
+    UNTIL("until"),
+    END("end"),
+    PRINT("print");
 
     private static HashMap<String, TokenType> lookUpTable = new HashMap<>();
 
