@@ -251,6 +251,11 @@ public class Parser {
                 && tokenBranchAtMatchesCode(index + 2, ARITHMETIC_EXPRESSION)) {
             createAndAddTokenBranchObjectFromIndices(ARITHMETIC_EXPRESSION, index, index + 2);
             return true;
+        } else if (tokenBranchAtMatchesCode(index, ARITHMETIC_EXPRESSION)
+                && tokenBranchAtMatchesCode(index + 1, ARITHMETIC_OPERATOR)
+                && tokenBranchAtMatchesCode(index + 2, IDENTIFIER)) {
+            createAndAddTokenBranchObjectFromIndices(ARITHMETIC_EXPRESSION, index, index + 2);
+            return true;
         } else if (tokenBranchAtMatchesCode(index, IDENTIFIER)
                 && tokenBranchAtMatchesCode(index + 1, ARITHMETIC_OPERATOR)
                 && tokenBranchAtMatchesCode(index + 2, IDENTIFIER)) {
