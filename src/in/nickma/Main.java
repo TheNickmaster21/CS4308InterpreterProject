@@ -25,39 +25,29 @@ public class Main {
         }
 
         // Lookup tables are here so the scanner can be used to build them out for the parser
-        Map<Integer, String> literalLookup = new HashMap<>();
-        Map<Integer, String> parameterLookup = new HashMap<>();
+        Map<Integer, Integer> literalLookup = new HashMap<>();
+        Map<Integer, Integer> identifierValueLookup = new HashMap<>();
 
         switch (args[0]) { // Ability to only do certain levels of processing
             case "scan":
-                scan(input, literalLookup, parameterLookup);
+                scan(input, literalLookup, identifierValueLookup);
                 return;
             case "parse":
-                parse(scan(input, literalLookup, parameterLookup));
+                parse(scan(input, literalLookup, identifierValueLookup));
                 return;
-            case "interpret":
-                // TODO
+            case "execute":
+                execute(parse(scan(input, literalLookup, identifierValueLookup)), literalLookup, identifierValueLookup);
                 return;
             default:
-                throw new IllegalArgumentException("Expected valid argument! (scan, parse, or interpret)");
+                throw new IllegalArgumentException("Expected valid argument! (scan, parse, or execute)");
         }
-    }
-
-    private static TokenBranch parse(
-            final List<ParsableToken> parsableTokens) {
-
-        Parser parser = Parser.getParser(parsableTokens);
-
-        //TODO print out results
-
-        return parser.parse();
     }
 
     // Build a scanner for the given input, return a list of ParsableTokens from it, and populate the lookup tables
     private static List<ParsableToken> scan(
             final String input,
-            final Map<Integer, String> literalLookup,
-            final Map<Integer, String> parameterLookup) {
+            final Map<Integer, Integer> literalLookup,
+            final Map<Integer, Integer> identifierValueLookup) {
 
         // Make and run a scanner
         List<Token> tokens = Scanner.getScanner(input).scan();
@@ -69,14 +59,14 @@ public class Main {
         return tokens.stream()
                 .map(token -> {
                     // Check to see if we need to use the lookup tables
-                    Integer parameterCode = null;
                     Integer literalCode = null;
+                    Integer parameterCode = null;
                     if (TokenType.IDENTIFIER.equals(token.getTokenType())) {
-                        parameterCode = parameterLookup.size();
-                        parameterLookup.put(parameterCode, token.getLexeme());
+                        parameterCode = token.getLexeme().hashCode();
+                        identifierValueLookup.put(parameterCode, null);
                     } else if (TokenType.LITERAL_INTEGER.equals(token.getTokenType())) {
                         literalCode = literalLookup.size();
-                        literalLookup.put(literalCode, token.getLexeme());
+                        literalLookup.put(literalCode, Integer.valueOf(token.getLexeme()));
                     }
 
                     // Make the new Parsable token
@@ -86,6 +76,26 @@ public class Main {
                             literalCode);
                 })
                 .collect(Collectors.toList());
+    }
+
+
+    private static TokenBranch parse(
+            final List<ParsableToken> parsableTokens) {
+
+        Parser parser = Parser.getParser(parsableTokens);
+
+        return parser.parse();
+    }
+
+    //Get an executer and execute the given parse tree with the given literalLookup and parameter lookup
+    private static void execute(
+            final TokenBranch tokenBranch,
+            final Map<Integer, Integer> literalLookup,
+            final Map<Integer, Integer> identifierValueLookup) {
+
+        Executor executor = new Executor(literalLookup, identifierValueLookup);
+
+        executor.execute(tokenBranch);
     }
 
     // Utility method to read a file with the given path

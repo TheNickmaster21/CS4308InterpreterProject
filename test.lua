@@ -3,6 +3,7 @@ function test()
     b = 30
     c = 0
     while a < b do
+        print(c)
         print(a)
         a = 2 * a
         c = c + 1
